@@ -13,6 +13,7 @@ export default async function nebulaChat(input: NebulaChatInput) {
     const payload = {
       client: input.client || client,
       message: input.message,
+      account: input.contextFilter?.walletAddresses,
       // Conditionally add contextFilter if provided
       ...(input.contextFilter ? { contextFilter: input.contextFilter } : {}),
       ...(input.sessionId ? { session_id: input.sessionId } : {}),

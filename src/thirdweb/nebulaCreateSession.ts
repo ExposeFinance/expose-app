@@ -61,7 +61,7 @@ export default async function nebulaCreateSession(
         context_filter: {
           chain_ids: [sepolia.id.toString()],
           contract_addresses: [],
-          wallet_addresses: [],
+          wallet_addresses: [account.address],
         },
       }),
     });
