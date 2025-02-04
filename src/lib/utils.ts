@@ -13,10 +13,10 @@ export const getCssVariable = (variableName: string) => {
     .trim() as `#${string}`;
 };
 
-import { Account, privateKeyToAccount } from "thirdweb/wallets";
+import { privateKeyToAccount } from "thirdweb/wallets";
 import { client } from "../thirdweb/thirdwebClient.js";
 
-export const account: Account = privateKeyToAccount({
+export const account = privateKeyToAccount({
   client: client,
-  privateKey: process.env.PRIVATE_KEY!,
+  privateKey: import.meta.env.VITE_PRIVATE_KEY,
 });

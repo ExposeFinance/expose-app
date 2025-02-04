@@ -1,18 +1,24 @@
 import { Nebula } from "thirdweb/ai";
-import { account } from "@/lib/utils";
 import { client } from "./thirdwebClient.js";
 
-type NebulaChatInput = Omit<Nebula.Input, "client"> & {
+type NebulaChatInput = {
   client?: Nebula.Input["client"];
+  message: string;
+  contextFilter?: Nebula.Input["contextFilter"];
+  sessionId?: string;
 };
 
 export default async function nebulaChat(input: NebulaChatInput) {
   try {
-    const response = await Nebula.chat({
-      ...input,
+    const payload = {
       client: input.client || client,
-      account: input.account || account,
-    } as Nebula.Input);
+      message: input.message,
+      // Conditionally add contextFilter if provided
+      ...(input.contextFilter ? { contextFilter: input.contextFilter } : {}),
+      ...(input.sessionId ? { session_id: input.sessionId } : {}),
+    } as Nebula.Input; // cast to Nebula.Input so TypeScript sees all required fields
+
+    const response = await Nebula.chat(payload);
     return response;
   } catch (error) {
     console.error(error);

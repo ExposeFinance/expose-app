@@ -1,6 +1,6 @@
 import { client } from "./thirdwebClient.js";
 import { account } from "@/lib/utils";
-import { polygon } from "thirdweb/chains";
+import { sepolia } from "thirdweb/chains";
 
 type NebulaCreateSessionInput = {
   title: string;
@@ -59,7 +59,7 @@ export default async function nebulaCreateSession(
           signer_wallet_address: account.address,
         },
         context_filter: {
-          chain_ids: [polygon.id.toString()],
+          chain_ids: [sepolia.id.toString()],
           contract_addresses: [],
           wallet_addresses: [],
         },
