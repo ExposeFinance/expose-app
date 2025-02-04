@@ -67,7 +67,7 @@ export default function NavBar() {
                 className={cn(
                   "flex flex-col items-center justify-center gap-1 text-sm px-3 py-1 transition-all duration-200",
                   isActive
-                    ? "text-[theme(colors.text.accent)]"
+                    ? "text-[theme(colors.pink.500)]"
                     : "text-[theme(colors.text.primary)] hover:text-[theme(colors.text.accent)]"
                 )}
               >

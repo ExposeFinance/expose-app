@@ -89,7 +89,7 @@ const Chat: React.FC = () => {
             key={idx}
             className={`max-w-full p-0 ${
               msg.role === "user"
-                ? "self-end bg-blue-800"
+                ? "self-end bg-pink-500"
                 : "self-start bg-surface-primary"
             }`}
           >
