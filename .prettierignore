@@ -1,0 +1,14 @@
+node_modules
+dist
+build
+.vite
+package-lock.json
+yarn.lock
+*.svg
+*.ico
+src/assets/*
+
+src/styles/css/base.css
+src/styles/css/dark.css
+tailwind.base.js
+
