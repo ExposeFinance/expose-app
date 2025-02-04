@@ -155,7 +155,7 @@ const Chat: React.FC = () => {
             disabled={loading}
             className={cn("w-1/3")}
           >
-            {loading ? `Sending${dots}` : "Send"}
+            {loading ? `Reasoning${dots}` : "Chat"}
           </RainbowButton>
         </div>
       }
