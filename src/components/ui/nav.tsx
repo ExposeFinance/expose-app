@@ -28,7 +28,10 @@ export default function NavBar() {
   return (
     <>
       {/* Navigation Bar */}
-      <nav className="border-t border-[theme(colors.separator.primary)]">
+      <nav
+        className="border-t border-[theme(colors.separator.primary)]"
+        data-aos="fade-in"
+      >
         <div className="flex justify-around py-2">
           {navItems.map((item) => {
             const isActive = location.pathname === item.path;
