@@ -1,13 +1,7 @@
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 // import { Skeleton } from "@/components/ui/skeleton";
-import {
-  CircleDollarSign,
-  // Coins,
-  // House,
-  // BrickWall,
-  ShieldCheck,
-} from "lucide-react";
+import { CircleDollarSign, ShieldCheck } from "lucide-react";
 import { PageLayout } from "@/components/layout/PageLayout";
 
 export default function Home() {
@@ -21,7 +15,7 @@ export default function Home() {
   ];
 
   return (
-    <PageLayout title="Home">
+    <PageLayout title="Wallet">
       <div className="flex flex-col h-full space-y-4">
         {/* Card Section */}
         <Card
@@ -51,7 +45,7 @@ export default function Home() {
           <>
             <Avatar className="w-24 h-24">
               <AvatarImage
-                src={"https://via.placeholder.com/150"}
+                src={"https://dummyimage.com/360x360/eee/aaa"}
                 alt="dummy user"
               />
               <AvatarFallback className="bg-primary text-[theme(colors.text.primary)]">
@@ -59,7 +53,7 @@ export default function Home() {
               </AvatarFallback>
             </Avatar>
             <h2 className="text-xl font-semibold text-[theme(colors.text.primary)]">
-              {"No Name"}
+              {"Vitalik"}
             </h2>
           </>
         </div>
