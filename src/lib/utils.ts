@@ -12,3 +12,11 @@ export const getCssVariable = (variableName: string) => {
     .getPropertyValue(variableName)
     .trim() as `#${string}`;
 };
+
+import { Account, privateKeyToAccount } from "thirdweb/wallets";
+import { client } from "../thirdweb/thirdwebClient.js";
+
+export const account: Account = privateKeyToAccount({
+  client: client,
+  privateKey: process.env.PRIVATE_KEY!,
+});
