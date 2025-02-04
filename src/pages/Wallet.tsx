@@ -10,7 +10,7 @@ export default function Home() {
       id: 1,
       name: "ETH",
       amount: `69 ETH`,
-      icon: <CircleDollarSign className="text-yellow-500" />,
+      icon: <CircleDollarSign className="text-yellow-1000" />,
     },
   ];
 
@@ -39,7 +39,7 @@ export default function Home() {
 
         {/* Profile Section */}
         <div
-          className="flex flex-col items-center space-y-2"
+          className="flex flex-col items-center space-y-4"
           data-aos="fade-in"
         >
           <>
@@ -63,7 +63,7 @@ export default function Home() {
           {walletData.map((item) => (
             <Card
               key={item.id}
-              className="flex items-center space-x-4 py-1 border-none shadow-none"
+              className="flex items-center space-x-2 py-1 border-none shadow-none"
             >
               <div className="w-10 h-10 flex items-center justify-center">
                 {item.icon}

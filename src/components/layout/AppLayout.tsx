@@ -3,6 +3,7 @@ import Loader from "@/components/ui/loader";
 import NavBar from "@/components/ui/nav";
 import AOS from "aos";
 import "aos/dist/aos.css";
+import { getCssVariable } from "@/lib/utils";
 
 type AppLayoutProps = {
   children: ReactNode;
@@ -45,9 +46,20 @@ export default function AppLayout({ children }: AppLayoutProps) {
           href="https://fonts.googleapis.com/css2?family=Overpass:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
           rel="stylesheet"
         />
+
+        <meta
+          name="theme-color"
+          content={getCssVariable("--colors-background-primary")}
+          media="(prefers-color-scheme: light)"
+        />
+        <meta
+          name="theme-color"
+          content={getCssVariable("--colors-background-primary")}
+          media="(prefers-color-scheme: dark)"
+        />
       </head>
       {isLoading ? (
-        <div className="flex items-center justify-center h-dvh bg-background-primary">
+        <div className="flex items-center justify-center h-dvh bg-background-primary border-border-primary text-text-primary">
           <Loader />
         </div>
       ) : (

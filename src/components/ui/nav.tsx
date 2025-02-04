@@ -34,7 +34,10 @@ export default function NavBar() {
       >
         <div className="flex justify-around py-2">
           {navItems.map((item) => {
-            const isActive = location.pathname === item.path;
+            // Use partial matching so that "/chat/anything" is still active
+            const isActive =
+              location.pathname === item.path ||
+              location.pathname.startsWith(item.path + "/");
 
             if (item.path === "/orders" || item.path === "/settings") {
               // Show Bottom Sheet for not launched features
@@ -68,7 +71,7 @@ export default function NavBar() {
                   "flex flex-col items-center justify-center gap-1 text-sm px-3 py-1 transition-all duration-200",
                   isActive
                     ? "text-[theme(colors.pink.500)]"
-                    : "text-[theme(colors.text.primary)] hover:text-[theme(colors.text.accent)]"
+                    : "text-[theme(colors.text.primary)] hover:text-[theme(colors.pink.500)]"
                 )}
               >
                 <div className="w-6 h-6">{item.icon}</div>

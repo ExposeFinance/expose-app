@@ -26,7 +26,7 @@ const Loader: React.FC = () => {
           cy="50"
           r="40" // Match radius of background circle
           fill="none"
-          stroke="#ff0598" /* Progress stroke */
+          stroke="#FF4CC7" /* Progress stroke */
           strokeWidth="10" // Match stroke width
           strokeDasharray="251" /* Circumference (2 * π * r) */
           strokeDashoffset="180" /* Adjust for partial progress */
