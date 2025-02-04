@@ -16,8 +16,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
     const timer = setTimeout(() => {
       setIsLoading(false);
     }, 2500);
-
-    return () => clearTimeout(timer); // Clear the timer on unmount
+    return () => clearTimeout(timer);
   }, []);
 
   // Initialize AOS animations
@@ -27,7 +26,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
       offset: 50, // Distance from the viewport to trigger the animation
       easing: "ease-in-out", // Animation easing
       once: true, // Only animate once
-      anchorPlacement: "top-bottom", // Ensures animations trigger based on element position
+      anchorPlacement: "top-bottom",
     });
   }, []);
 
@@ -48,15 +47,14 @@ export default function AppLayout({ children }: AppLayoutProps) {
         />
       </head>
       {isLoading ? (
-        <div className="flex items-center justify-center h-screen bg-background-primary">
+        <div className="flex items-center justify-center min-h-screen bg-background-primary">
           <Loader />
         </div>
       ) : (
-        <div className="h-screen flex flex-col bg-background-primary">
-          {/* Top Section: Daily Check-In Splash */}
-
-          {/* Main Content (Page Layout) */}
-          <div className="flex-1 overflow-hidden">{children}</div>
+        // Use min-h-screen so the container is at least the height of the viewport.
+        <div className="min-h-screen flex flex-col bg-background-primary">
+          {/* Main Content: scrollable if needed */}
+          <div className="flex-1 overflow-y-auto">{children}</div>
 
           {/* Navigation Bar at the bottom */}
           <div className="shrink-0 shadow-md">
