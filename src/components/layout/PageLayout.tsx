@@ -4,12 +4,14 @@ interface PageLayoutProps {
   title: string;
   children: React.ReactNode;
   actionButton?: React.ReactNode;
+  promptInput?: React.ReactNode; // NEW
 }
 
 export const PageLayout: React.FC<PageLayoutProps> = ({
   title,
   children,
   actionButton,
+  promptInput,
 }) => {
   return (
     <div className="flex flex-col h-full" data-aos="fade-in">
@@ -25,7 +27,14 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
         {children}
       </div>
 
-      {/* Action Button */}
+      {/* Prompt Input (optional) */}
+      {promptInput && (
+        <div className="shrink-0 sticky bottom-0 px-4 py-4 border-t border-[theme(colors.separator.primary)] z-10">
+          {promptInput}
+        </div>
+      )}
+
+      {/* Action Button (optional) */}
       {actionButton && (
         <div className="shrink-0 sticky bottom-0 px-4 py-4 border-t border-[theme(colors.separator.primary)] z-10">
           {actionButton}

@@ -1,10 +1,12 @@
 import React, { useState } from "react";
-// Import your nebulaChat function and any required chain info
+import { Card, CardContent } from "@/components/ui/card";
+import { PageLayout } from "@/components/layout/PageLayout";
 import nebulaChat from "../thirdweb/nebulaChat.js";
 import { sepolia } from "thirdweb/chains";
 import { useThirdweb } from "../context/ThirdwebContext";
+import { Button } from "@/components/ui/button.js";
+import { useAnimatedDots } from "@/hooks/useAnimatedDots";
 
-// Define a simple type for messages
 type ChatMessage = {
   role: "user" | "assistant";
   content: string;
@@ -14,18 +16,18 @@ const Chat: React.FC = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [prompt, setPrompt] = useState("");
   const [loading, setLoading] = useState(false);
+  const dots = useAnimatedDots(loading);
 
-  // Get the sessionId from our ThirdwebContext instead of hard-coding it.
   const { sessionId } = useThirdweb();
 
   const handleSend = async () => {
     if (!prompt.trim()) return;
 
-    // Append the user's message to the conversation.
     const userMessage: ChatMessage = { role: "user", content: prompt.trim() };
+    setPrompt("");
     setMessages((prev) => [...prev, userMessage]);
-
     setLoading(true);
+
     try {
       const response = await nebulaChat({
         message: prompt.trim(),
@@ -35,7 +37,6 @@ const Chat: React.FC = () => {
         },
       });
 
-      // Assume that the response has a "message" property.
       const assistantMessage: ChatMessage = {
         role: "assistant",
         content: response.message || "No message returned",
@@ -43,19 +44,17 @@ const Chat: React.FC = () => {
 
       setMessages((prev) => [...prev, assistantMessage]);
     } catch (error: unknown) {
-      if (error instanceof Error) {
-        console.error("Error during nebulaChat:", error.message);
-        setMessages((prev) => [
-          ...prev,
-          { role: "assistant", content: "Error: " + error },
-        ]);
-      } else {
-        console.error("Unknown error during nebulaChat:", error);
-        setMessages((prev) => [
-          ...prev,
-          { role: "assistant", content: "Unknown error occurred" },
-        ]);
-      }
+      console.error("Error during nebulaChat:", error);
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          content:
+            error instanceof Error
+              ? `Error: ${error.message}`
+              : "Unknown error occurred",
+        },
+      ]);
     } finally {
       setLoading(false);
       setPrompt("");
@@ -63,48 +62,50 @@ const Chat: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-full p-4 space-y-4">
-      {/* Chat window */}
-      <div className="flex-1 p-4 overflow-auto border rounded">
+    <PageLayout
+      title="Chat"
+      promptInput={
+        <div className="flex space-x-2">
+          <input
+            type="text"
+            className="flex-1 p-2 border rounded"
+            placeholder="Type your message..."
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") handleSend();
+            }}
+          />
+          <Button onClick={handleSend} disabled={loading} className="w-1/3">
+            {loading ? `Sending${dots}` : "Send"}
+          </Button>
+        </div>
+      }
+    >
+      {/* Chat Messages Thread */}
+      <div className="flex flex-col space-y-2">
         {messages.map((msg, idx) => (
-          <div
+          <Card
             key={idx}
-            className={`mb-2 ${msg.role === "user" ? "text-right" : "text-left"}`}
+            className={`max-w-full p-0 ${
+              msg.role === "user"
+                ? "self-end bg-blue-800"
+                : "self-start bg-surface-primary"
+            }`}
           >
-            <div
-              className={`inline-block px-4 py-2 rounded ${
-                msg.role === "user"
-                  ? "bg-blue-500 text-white"
-                  : "bg-gray-200 text-black"
-              }`}
-            >
-              {msg.content}
-            </div>
-          </div>
+            <CardContent className="p-2">
+              <div
+                className={`text-sm ${
+                  msg.role === "user" ? "text-white" : "text-black"
+                }`}
+              >
+                {msg.content}
+              </div>
+            </CardContent>
+          </Card>
         ))}
       </div>
-
-      {/* Input and send button */}
-      <div className="flex space-x-2">
-        <input
-          type="text"
-          className="flex-1 p-2 border rounded"
-          placeholder="Type your message..."
-          value={prompt}
-          onChange={(e) => setPrompt(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") handleSend();
-          }}
-        />
-        <button
-          className="px-4 py-2 bg-green-500 text-white rounded"
-          onClick={handleSend}
-          disabled={loading}
-        >
-          {loading ? "Sending..." : "Send"}
-        </button>
-      </div>
-    </div>
+    </PageLayout>
   );
 };
 
