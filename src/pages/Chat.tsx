@@ -2,7 +2,7 @@ import React, { useState, useRef, useCallback, useEffect } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { sepolia } from "thirdweb/chains";
-import { useThirdweb } from "../context/ThirdwebContext";
+import { useThirdweb } from "@/hooks/useThirdweb";
 import { Button } from "@/components/ui/button.js";
 import { useAnimatedDots } from "@/hooks/useAnimatedDots";
 import { PreparedTransaction, sendTransaction } from "thirdweb";

@@ -45,8 +45,6 @@ type NebulaSession = {
 export default async function nebulaCreateSession(
   input: NebulaCreateSessionInput
 ): Promise<NebulaSession> {
-  console.log("Creating session with title:", input.title);
-  console.log("Creating session with title:", account.address);
   try {
     const response = await fetch("https://nebula-api.thirdweb.com/session", {
       method: "POST",

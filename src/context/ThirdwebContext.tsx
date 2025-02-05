@@ -1,11 +1,11 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useEffect, useState } from "react";
 import nebulaCreateSession from "../thirdweb/nebulaCreateSession";
 
-type ThirdwebContextType = {
+export type ThirdwebContextType = {
   sessionId: string;
 };
 
-const ThirdwebContext = createContext<ThirdwebContextType | undefined>(
+export const ThirdwebContext = createContext<ThirdwebContextType | undefined>(
   undefined
 );
 
@@ -36,13 +36,4 @@ export const ThirdwebProvider: React.FC<{ children: React.ReactNode }> = ({
       {children}
     </ThirdwebContext.Provider>
   );
-};
-
-// Custom hook for consuming the ThirdwebContext
-export const useThirdweb = () => {
-  const context = useContext(ThirdwebContext);
-  if (!context) {
-    throw new Error("useThirdweb must be used within a ThirdwebProvider");
-  }
-  return context;
 };
