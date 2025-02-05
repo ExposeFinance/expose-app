@@ -11,6 +11,7 @@ import { account, cn } from "@/lib/utils";
 import { RainbowButton } from "@/components/ui/rainbow-button.js";
 import { Nebula } from "thirdweb/ai";
 import { client } from "@/thirdweb/thirdwebClient.js";
+import { ChatVoiceButton } from "@/components/ChatButton";
 
 type ChatMessage = {
   role: "user" | "assistant";
@@ -150,13 +151,9 @@ const Chat: React.FC = () => {
               if (e.key === "Enter") handleSend();
             }}
           />
-          <RainbowButton
-            onClick={handleSend}
-            disabled={loading}
-            className={cn("w-1/3")}
-          >
+          <ChatVoiceButton onClick={handleSend} disabled={loading}>
             {loading ? `Reasoning${dots}` : "Chat"}
-          </RainbowButton>
+          </ChatVoiceButton>
         </div>
       }
     >

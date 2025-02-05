@@ -35,6 +35,7 @@ export default {
       },
       animation: {
         rainbow: "rainbow var(--speed, 2s) infinite linear",
+        pulse: "pulse 2s ease-out infinite",
       },
       keyframes: {
         rainbow: {
@@ -44,6 +45,10 @@ export default {
           "100%": {
             "background-position": "200%",
           },
+        },
+        pulse: {
+          "0%, 100%": { boxShadow: "0 0 0 0 hsl(var(--color-1))" },
+          "50%": { boxShadow: "0 0 0 8px hsl(var(--color-1))" },
         },
       },
     },
