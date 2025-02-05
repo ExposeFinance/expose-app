@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from "react";
+import React, { useState, useRef, useCallback, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { sepolia } from "thirdweb/chains";
@@ -6,7 +6,7 @@ import { useThirdweb } from "../context/ThirdwebContext";
 import { Button } from "@/components/ui/button.js";
 import { useAnimatedDots } from "@/hooks/useAnimatedDots";
 import { sendTransaction } from "thirdweb";
-import { account, openai } from "@/lib/utils"; // Import pre-instantiated OpenAI client
+import { account, openai } from "@/lib/utils"; // <-- Make sure openai is imported
 import { Nebula } from "thirdweb/ai";
 import { client } from "@/thirdweb/thirdwebClient.js";
 import { ChatVoiceButton } from "@/components/ChatButton";
@@ -18,38 +18,110 @@ type ChatMessage = {
 };
 
 const Chat: React.FC = () => {
+  // ---------------------- Original State and Hooks ----------------------
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [prompt, setPrompt] = useState("");
   const [loading, setLoading] = useState(false);
   const [pendingTransactions, setPendingTransactions] = useState<any[]>([]);
   const [executingTx, setExecutingTx] = useState(false);
-  
-  // New state for Whisper recording
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const audioChunksRef = useRef<Blob[]>([]);
-  const streamRef = useRef<MediaStream | null>(null);
 
   const dots = useAnimatedDots(loading);
   const { sessionId } = useThirdweb(); // Assume you have "account" from context or wherever
 
+  // ---------------------- New Voice Recording References ----------------------
+  // These are needed for recording and handling audio data
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
+  const streamRef = useRef<MediaStream | null>(null);
+
+  // ---------------------------------------------------------------------------
+  // 1) A helper that sends a message given a string (used by typed AND voice)
+  // ---------------------------------------------------------------------------
+  const handleSendWithText = useCallback(
+    async (text: string) => {
+      // Trim to avoid sending empty lines
+      const cleanText = text.trim();
+      if (!cleanText) return;
+
+      // Immediately add the user's message to the chat
+      const userMessage: ChatMessage = { role: "user", content: cleanText };
+      setMessages((prev) => [...prev, userMessage]);
+      setLoading(true);
+      setPrompt(""); // Clear out the typed prompt (optional)
+
+      try {
+        // Call Nebula.chat with the provided text
+        const response = await Nebula.chat({
+          client: client,
+          sessionId: sessionId,
+          message: cleanText,
+          contextFilter: {
+            chains: [sepolia],
+          },
+          account: account,
+        });
+
+        // Show the assistant's response
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: "assistant",
+            content: response.message || "No message returned",
+          },
+        ]);
+
+        // If there are transactions, store them so we can confirm
+        if (response.transactions && response.transactions.length > 0) {
+          setPendingTransactions(response.transactions);
+        }
+      } catch (error) {
+        console.error("Error during nebulaChat:", error);
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: "assistant",
+            content:
+              error instanceof Error
+                ? `Error: ${error.message}`
+                : "Unknown error occurred",
+          },
+        ]);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [sessionId]
+  );
+
+  // ---------------------------------------------------------------------------
+  // 2) Original handleSend for typed messages (unchanged logic)
+  // ---------------------------------------------------------------------------
+  const handleSend = async (voiceInput?: string) => {
+    if (!prompt.trim()) return;
+    await handleSendWithText(voiceInput || prompt);
+  };
+
+  // ---------------------------------------------------------------------------
+  // 3) Voice Recording: Start
+  // ---------------------------------------------------------------------------
   const stopRecording = useCallback(async () => {
     if (!mediaRecorderRef.current) return;
 
     mediaRecorderRef.current.stop();
-    
+
     // Stop all tracks in the stream
     if (streamRef.current) {
-      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current.getTracks().forEach((track) => track.stop());
       streamRef.current = null;
     }
 
     // Create audio blob and transcribe
-    const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
-    
+    const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
+
     try {
       // Convert Blob to File
-      const audioFile = new File([audioBlob], 'recording.webm', { 
-        type: 'audio/webm' 
+      const audioFile = new File([audioBlob], "recording.webm", {
+        type: "audio/webm",
       });
 
       // Send to OpenAI Whisper
@@ -60,11 +132,8 @@ const Chat: React.FC = () => {
 
       // Set the transcribed text as the prompt
       setPrompt(transcription.text);
-
-      // Use setTimeout to ensure state is updated before sending
-      setTimeout(async () => {
-        await handleSend();
-      }, 0);
+      //Call handleSend directly with transcription text
+      await handleSend(transcription.text);
     } catch (error) {
       console.error("Whisper transcription error:", error);
       //alert("Failed to transcribe audio"); -- Always throwing an error right now
@@ -82,7 +151,7 @@ const Chat: React.FC = () => {
       // Request microphone access
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       streamRef.current = stream;
-      
+
       // Create MediaRecorder
       const mediaRecorder = new MediaRecorder(stream);
       mediaRecorderRef.current = mediaRecorder;
@@ -101,64 +170,11 @@ const Chat: React.FC = () => {
     }
   }, []);
 
-  const handleSend = async () => {
-    if (!prompt || prompt==="") return;
-    const userMessage: ChatMessage = { role: "user", content: prompt };
-    setMessages((prev) => [...prev, userMessage]);
-    setLoading(true);
-
-    try {
-      const response = await Nebula.chat({
-        client: client,
-        sessionId: sessionId,
-        message: prompt,
-        contextFilter: {
-          chains: [sepolia],
-        },
-        account: account,
-      });
-      // const response = await nebulaChat({
-      //   message: prompt,
-      //   sessionId,
-      //   contextFilter: { chains: [sepolia] },
-      // });
-
-      // Show the assistant's response
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "assistant",
-          content: response.message || "No message returned",
-        },
-      ]);
-
-      // If there are transactions, store them so we can confirm
-      if (response.transactions && response.transactions.length > 0) {
-        setPendingTransactions(response.transactions);
-      }
-    } catch (error) {
-      console.error("Error during nebulaChat:", error);
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "assistant",
-          content:
-            error instanceof Error
-              ? `Error: ${error.message}`
-              : "Unknown error occurred",
-        },
-      ]);
-    } finally {
-      setLoading(false);
-      setPrompt("");
-    }
-  };
-
-  // Handle user's "Yes" to execute transactions
+  // ---------------------------------------------------------------------------
+  // 5) Transaction Confirm/Decline (same as before)
+  // ---------------------------------------------------------------------------
   const handleConfirmTransactions = async () => {
     setExecutingTx(true);
-
-    // (Optional) Add a message to let user know we're executing
     setMessages((prev) => [
       ...prev,
       {
@@ -169,7 +185,6 @@ const Chat: React.FC = () => {
 
     try {
       for (const tx of pendingTransactions) {
-        // You may need to adapt this call to match your environment
         const txReceipt = await sendTransaction({
           transaction: tx,
           account,
@@ -199,7 +214,6 @@ const Chat: React.FC = () => {
     }
   };
 
-  // Handle user's "No" to reject transactions
   const handleDeclineTransactions = () => {
     setMessages((prev) => [
       ...prev,
@@ -208,6 +222,12 @@ const Chat: React.FC = () => {
     setPendingTransactions([]);
   };
 
+  // ---------------------------------------------------------------------------
+  // 6) Render the page
+  //    - We attach both typed input (onClick -> handleSend)
+  //    - And voice start/stop events (onMouseDown -> startRecording,
+  //      onMouseUp -> stopRecording, etc.)
+  // ---------------------------------------------------------------------------
   return (
     <PageLayout
       title="Chat"
@@ -221,19 +241,19 @@ const Chat: React.FC = () => {
             onKeyDown={(e) => {
               if (e.key === "Enter") handleSend();
             }}
-            className="flex-1" // This ensures the input takes up available width.
+            className="flex-1"
           />
-          <ChatVoiceButton 
-            onMouseDown={startRecording}
-            onMouseUp={stopRecording}
-            onMouseLeave={stopRecording}
-            onTouchStart={startRecording}
-            onTouchEnd={stopRecording}
+          <ChatVoiceButton
+            onClick={handleSend} // typed input: same as old code
+            onMouseDown={startRecording} // voice start
+            onMouseUp={stopRecording} // voice stop
+            onMouseLeave={stopRecording} // in case mouse leaves
+            onTouchStart={startRecording} // mobile: voice start
+            onTouchEnd={stopRecording} // mobile: voice stop
             disabled={loading}
           >
             {loading ? `Reasoning${dots}` : "Chat"}
           </ChatVoiceButton>
-          
         </div>
       }
     >
@@ -249,7 +269,7 @@ const Chat: React.FC = () => {
             }`}
           >
             <CardContent className="p-2">
-              <div className={`text-sm break-words`}>{msg.content}</div>
+              <div className="text-sm break-words">{msg.content}</div>
             </CardContent>
           </Card>
         ))}
@@ -295,3 +315,4 @@ const Chat: React.FC = () => {
 };
 
 export default Chat;
+
