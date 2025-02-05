@@ -97,7 +97,7 @@ const Chat: React.FC = () => {
   // 2) Original handleSend for typed messages (unchanged logic)
   // ---------------------------------------------------------------------------
   const handleSend = async (voiceInput?: string) => {
-    if (!prompt.trim()) return;
+    if (!prompt && !voiceInput) return;
     await handleSendWithText(voiceInput || prompt);
   };
 
@@ -132,7 +132,7 @@ const Chat: React.FC = () => {
 
       // Set the transcribed text as the prompt
       setPrompt(transcription.text);
-      //Call handleSend directly with transcription text
+      //Immediately call handleSend before prompt is set
       await handleSend(transcription.text);
     } catch (error) {
       console.error("Whisper transcription error:", error);
@@ -315,4 +315,3 @@ const Chat: React.FC = () => {
 };
 
 export default Chat;
-
