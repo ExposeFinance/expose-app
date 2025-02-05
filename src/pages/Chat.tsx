@@ -11,6 +11,7 @@ import { Nebula } from "thirdweb/ai";
 import { client } from "@/thirdweb/thirdwebClient.js";
 import { ChatVoiceButton } from "@/components/ChatButton";
 import { Input } from "@/components/ui/input";
+import { AnimatedShinyText } from "@/components/ui/shimmer-text";
 
 type ChatMessage = {
   role: "user" | "assistant";
@@ -295,9 +296,9 @@ const Chat: React.FC = () => {
         {loading && (
           <Card className="`max-w-full p-0 self-start bg-surface-primary">
             <CardContent className="p-2">
-              <div className="text-sm text-text-secondary break-words">
-                Reasoning{dots}
-              </div>
+              <AnimatedShinyText className="text-sm text-text-secondary break-words">
+                ✨ Agent is responding{dots}
+              </AnimatedShinyText>
             </CardContent>
           </Card>
         )}

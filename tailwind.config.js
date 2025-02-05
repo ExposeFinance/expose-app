@@ -36,6 +36,7 @@ export default {
       animation: {
         rainbow: "rainbow var(--speed, 2s) infinite linear",
         pulse: "pulse 2s ease-out infinite",
+        "shiny-text": "shiny-text 3s infinite",
       },
       keyframes: {
         rainbow: {
@@ -49,6 +50,14 @@ export default {
         pulse: {
           "0%, 100%": { boxShadow: "0 0 0 0 hsl(var(--color-1))" },
           "50%": { boxShadow: "0 0 0 8px hsl(var(--color-1))" },
+        },
+        "shiny-text": {
+          "0%, 90%, 100%": {
+            "background-position": "calc(-100% - var(--shiny-width)) 0",
+          },
+          "30%, 60%": {
+            "background-position": "calc(100% + var(--shiny-width)) 0",
+          },
         },
       },
     },
