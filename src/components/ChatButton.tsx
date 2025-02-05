@@ -65,6 +65,12 @@ export function ChatVoiceButton({
       onPointerCancel={handlePressEnd}
       onPointerLeave={handlePressEnd}
       className="w-1/3"
+      style={{
+        touchAction: "none",
+        userSelect: "none", // for modern browsers
+        WebkitUserSelect: "none", // iOS Safari
+        WebkitTouchCallout: "none", // iOS Safari
+      }}
     >
       {voiceMode ? (
         <PulsatingButton className="w-full" {...props}>
