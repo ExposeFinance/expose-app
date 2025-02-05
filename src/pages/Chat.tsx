@@ -285,6 +285,16 @@ const Chat: React.FC = () => {
             </CardContent>
           </Card>
         ))}
+        {/* 2) While loading, show a "typing" bubble at the bottom with dynamic dots */}
+        {loading && (
+          <Card className="`max-w-full p-0 self-start bg-surface-primary">
+            <CardContent className="p-2">
+              <div className="text-sm text-text-secondary break-words">
+                Reasoning{dots}
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
 
       {/* If we have transactions to confirm, show them */}
