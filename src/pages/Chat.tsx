@@ -32,6 +32,9 @@ const Chat: React.FC = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
 
+  //Auto close keyboard on enter/chat click
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
   const dots = useAnimatedDots(loading);
   const { sessionId } = useThirdweb(); // from your context or environment
 
@@ -99,6 +102,7 @@ const Chat: React.FC = () => {
   // ---------------------- handleSend (typed) ----------------------
   const handleSend = async (voiceInput?: string) => {
     if (!prompt && !voiceInput) return;
+    inputRef.current?.blur();
     if (voiceInput) {
       await handleSendWithText(voiceInput);
     } else {
@@ -226,6 +230,7 @@ const Chat: React.FC = () => {
       promptInput={
         <div className="flex space-x-2">
           <Input
+            ref={inputRef}
             type="text"
             placeholder="Type your message..."
             value={prompt}
