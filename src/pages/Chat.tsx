@@ -276,7 +276,7 @@ const Chat: React.FC = () => {
             key={idx}
             className={`max-w-full p-0 ${
               msg.role === "user"
-                ? "self-end bg-pink-500"
+                ? "self-end bg-pink-500 text-text-inverse"
                 : "self-start bg-surface-primary"
             }`}
           >
