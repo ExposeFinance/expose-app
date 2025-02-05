@@ -139,7 +139,7 @@ const Chat: React.FC = () => {
     <PageLayout
       title="Chat"
       promptInput={
-        <div className="flex space-x-2 border-border-primary">
+        <div className="flex space-x-2">
           <Input
             type="text"
             placeholder="Type your message..."
