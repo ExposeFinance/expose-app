@@ -289,30 +289,61 @@ const Chat: React.FC = () => {
 
       {/* Chat Messages Thread */}
       <div className="flex flex-col space-y-2 mb-4">
-        {messages.map((msg, idx) => (
-          <Card
-            key={idx}
-            className={`max-w-full px-2 ${
-              msg.role === "user"
-                ? "self-end bg-pink-500 text-text-white"
-                : "self-start bg-surface-primary"
-            }`}
-          >
-            <CardContent className="p-2">
-              <div className="text-sm break-words">{msg.content}</div>
-            </CardContent>
-          </Card>
-        ))}
+        {messages.map((msg, idx) => {
+          const isUser = msg.role === "user";
+
+          return (
+            <div
+              key={idx}
+              // "flex" container for the avatar + bubble
+              // If it's user, we "reverse" the row to put the avatar on the right
+              className={`flex items-end ${isUser ? "flex-row-reverse" : ""}`}
+            >
+              {/* Avatar */}
+              <img
+                src={
+                  isUser ? "https://github.com/shadcn.png" : "/expose-logo.png"
+                }
+                alt={isUser ? "User Avatar" : "Assistant Avatar"}
+                className="w-8 h-8 rounded-full m-2"
+              />
+
+              {/* Chat Bubble */}
+              <Card
+                className={`max-w-[70%] px-2 ${
+                  isUser
+                    ? "bg-pink-500 text-text-white self-end"
+                    : "bg-surface-primary self-start"
+                }`}
+              >
+                <CardContent className="p-2">
+                  <div className="text-sm break-words">{msg.content}</div>
+                </CardContent>
+              </Card>
+            </div>
+          );
+        })}
+
         {/* 2) While loading, show a "typing" bubble at the bottom with dynamic dots */}
         {loading && (
-          <Card className="`max-w-full p-0 self-start bg-surface-primary">
-            <CardContent className="p-2">
-              <AnimatedShinyText className="text-sm text-text-secondary break-words">
-                ✨ Agent is responding{dots}
-              </AnimatedShinyText>
-            </CardContent>
-          </Card>
+          <div className="flex items-end">
+            {/* Assistant avatar on the left */}
+            <img
+              src="/assistant-avatar.png"
+              alt="Assistant Avatar"
+              className="w-8 h-8 rounded-full m-2"
+            />
+            <Card className="max-w-[70%] p-0 self-start bg-surface-primary">
+              <CardContent className="p-2">
+                <AnimatedShinyText className="text-sm text-text-secondary break-words">
+                  ✨ Agent is responding{dots}
+                </AnimatedShinyText>
+              </CardContent>
+            </Card>
+          </div>
         )}
+
+        {/* Dummy div for auto-scroll (if you have that logic) */}
         <div ref={messagesEndRef} />
       </div>
 
