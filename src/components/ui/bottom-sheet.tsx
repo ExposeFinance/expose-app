@@ -22,7 +22,7 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({
       {/* Background Overlay (Backdrop) */}
       <div
         className={`fixed inset-0 z-40 bg-background-inverse transition-opacity duration-300 ${
-          isOpen ? "opacity-70" : "opacity-0 pointer-events-none"
+          isOpen ? "opacity-40" : "opacity-0 pointer-events-none"
         }`}
         onClick={onClose}
       ></div>

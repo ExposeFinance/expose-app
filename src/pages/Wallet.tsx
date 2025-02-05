@@ -45,7 +45,7 @@ export default function Home() {
           <>
             <Avatar className="w-24 h-24">
               <AvatarImage
-                src={"https://dummyimage.com/360x360/eee/aaa"}
+                src={"https://github.com/shadcn.png"}
                 alt="dummy user"
               />
               <AvatarFallback className="bg-primary text-[theme(colors.text.primary)]">

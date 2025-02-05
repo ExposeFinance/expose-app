@@ -281,7 +281,7 @@ const Chat: React.FC = () => {
         {messages.map((msg, idx) => (
           <Card
             key={idx}
-            className={`max-w-full p-0 ${
+            className={`max-w-full px-2 ${
               msg.role === "user"
                 ? "self-end bg-pink-500 text-text-inverse"
                 : "self-start bg-surface-primary"
