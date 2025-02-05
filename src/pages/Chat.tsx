@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useCallback } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { sepolia } from "thirdweb/chains";
@@ -6,7 +6,7 @@ import { useThirdweb } from "../context/ThirdwebContext";
 import { Button } from "@/components/ui/button.js";
 import { useAnimatedDots } from "@/hooks/useAnimatedDots";
 import { sendTransaction } from "thirdweb";
-import { account } from "@/lib/utils";
+import { account, openai } from "@/lib/utils"; // Import pre-instantiated OpenAI client
 import { Nebula } from "thirdweb/ai";
 import { client } from "@/thirdweb/thirdwebClient.js";
 import { ChatVoiceButton } from "@/components/ChatButton";
@@ -23,15 +23,87 @@ const Chat: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [pendingTransactions, setPendingTransactions] = useState<any[]>([]);
   const [executingTx, setExecutingTx] = useState(false);
+  
+  // New state for Whisper recording
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
+  const streamRef = useRef<MediaStream | null>(null);
 
   const dots = useAnimatedDots(loading);
   const { sessionId } = useThirdweb(); // Assume you have "account" from context or wherever
 
-  const handleSend = async () => {
-    if (!prompt.trim()) return;
+  const stopRecording = useCallback(async () => {
+    if (!mediaRecorderRef.current) return;
 
-    const userMessage: ChatMessage = { role: "user", content: prompt.trim() };
-    setPrompt("");
+    mediaRecorderRef.current.stop();
+    
+    // Stop all tracks in the stream
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current = null;
+    }
+
+    // Create audio blob and transcribe
+    const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+    
+    try {
+      // Convert Blob to File
+      const audioFile = new File([audioBlob], 'recording.webm', { 
+        type: 'audio/webm' 
+      });
+
+      // Send to OpenAI Whisper
+      const transcription = await openai.audio.transcriptions.create({
+        file: audioFile,
+        model: "whisper-1",
+      });
+
+      // Set the transcribed text as the prompt
+      setPrompt(transcription.text);
+
+      // Use setTimeout to ensure state is updated before sending
+      setTimeout(async () => {
+        await handleSend();
+      }, 0);
+    } catch (error) {
+      console.error("Whisper transcription error:", error);
+      //alert("Failed to transcribe audio"); -- Always throwing an error right now
+    }
+  }, []);
+
+  const startRecording = useCallback(async () => {
+    // Check if browser supports audio recording
+    if (!navigator.mediaDevices || !window.MediaRecorder) {
+      alert("Audio recording is not supported in this browser.");
+      return;
+    }
+
+    try {
+      // Request microphone access
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      streamRef.current = stream;
+      
+      // Create MediaRecorder
+      const mediaRecorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = mediaRecorder;
+      audioChunksRef.current = [];
+
+      // Start recording
+      mediaRecorder.start();
+
+      // Handle data collection
+      mediaRecorder.ondataavailable = (event) => {
+        audioChunksRef.current.push(event.data);
+      };
+    } catch (error) {
+      console.error("Microphone access error:", error);
+      alert("Could not access microphone");
+    }
+  }, []);
+
+  const handleSend = async () => {
+    if (!prompt || prompt==="") return;
+    const userMessage: ChatMessage = { role: "user", content: prompt };
     setMessages((prev) => [...prev, userMessage]);
     setLoading(true);
 
@@ -78,14 +150,15 @@ const Chat: React.FC = () => {
       ]);
     } finally {
       setLoading(false);
+      setPrompt("");
     }
   };
 
-  // Handle user’s "Yes" to execute transactions
+  // Handle user's "Yes" to execute transactions
   const handleConfirmTransactions = async () => {
     setExecutingTx(true);
 
-    // (Optional) Add a message to let user know we’re executing
+    // (Optional) Add a message to let user know we're executing
     setMessages((prev) => [
       ...prev,
       {
@@ -126,7 +199,7 @@ const Chat: React.FC = () => {
     }
   };
 
-  // Handle user’s "No" to reject transactions
+  // Handle user's "No" to reject transactions
   const handleDeclineTransactions = () => {
     setMessages((prev) => [
       ...prev,
@@ -150,9 +223,17 @@ const Chat: React.FC = () => {
             }}
             className="flex-1" // This ensures the input takes up available width.
           />
-          <ChatVoiceButton onClick={handleSend} disabled={loading}>
+          <ChatVoiceButton 
+            onMouseDown={startRecording}
+            onMouseUp={stopRecording}
+            onMouseLeave={stopRecording}
+            onTouchStart={startRecording}
+            onTouchEnd={stopRecording}
+            disabled={loading}
+          >
             {loading ? `Reasoning${dots}` : "Chat"}
           </ChatVoiceButton>
+          
         </div>
       }
     >
