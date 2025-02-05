@@ -23,17 +23,16 @@ export function ChatVoiceButton({
   const dots = useAnimatedDots(true);
 
   // Press down => start a timer
-  const handlePressStart = () => {
+  const handlePressStart = (e: React.TouchEvent | React.MouseEvent) => {
+    e.preventDefault(); // prevents default scrolling or long-press context menus
     timerRef.current = setTimeout(() => {
       timerRef.current = null;
       setVoiceMode(true);
-      // Begin recording if provided
       if (onVoiceStart) {
         onVoiceStart();
       }
     }, 500);
   };
-
   // Press ends => check if short or long
   const handlePressEnd = () => {
     if (timerRef.current) {
@@ -61,6 +60,10 @@ export function ChatVoiceButton({
       onMouseLeave={handlePressEnd}
       onTouchStart={handlePressStart}
       onTouchEnd={handlePressEnd}
+      onTouchCancel={handlePressEnd}
+      onPointerUp={handlePressEnd}
+      onPointerCancel={handlePressEnd}
+      onPointerLeave={handlePressEnd}
       className="w-1/3"
     >
       {voiceMode ? (
