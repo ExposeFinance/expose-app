@@ -5,7 +5,7 @@ import { sepolia } from "thirdweb/chains";
 import { useThirdweb } from "../context/ThirdwebContext";
 import { Button } from "@/components/ui/button.js";
 import { useAnimatedDots } from "@/hooks/useAnimatedDots";
-import { sendTransaction } from "thirdweb";
+import { PreparedTransaction, sendTransaction } from "thirdweb";
 import { account, openai } from "@/lib/utils";
 import { Nebula } from "thirdweb/ai";
 import { client } from "@/thirdweb/thirdwebClient.js";
@@ -23,7 +23,9 @@ const Chat: React.FC = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [prompt, setPrompt] = useState("");
   const [loading, setLoading] = useState(false);
-  const [pendingTransactions, setPendingTransactions] = useState<any[]>([]);
+  const [pendingTransactions, setPendingTransactions] = useState<
+    PreparedTransaction[]
+  >([]);
   const [executingTx, setExecutingTx] = useState(false);
 
   //Auto scroll to bottom when new message is added
@@ -194,7 +196,7 @@ const Chat: React.FC = () => {
           ...prev,
           {
             role: "assistant",
-            content: `Transaction executed successfully. Tx Hash: ${txReceipt?.transactionHash}`,
+            content: `✅ Transaction executed successfully! Tx Hash: ${txReceipt?.transactionHash}`,
           },
         ]);
       }
@@ -312,7 +314,7 @@ const Chat: React.FC = () => {
               <Card
                 className={`max-w-[70%] px-2 ${
                   isUser
-                    ? "bg-pink-500 text-text-white self-end"
+                    ? "bg-pink-500 text-white-100 self-end"
                     : "bg-surface-primary self-start"
                 }`}
               >
@@ -329,7 +331,7 @@ const Chat: React.FC = () => {
           <div className="flex items-end">
             {/* Assistant avatar on the left */}
             <img
-              src="/assistant-avatar.png"
+              src="/expose-logo.png"
               alt="Assistant Avatar"
               className="w-8 h-8 rounded-full m-2"
             />
@@ -351,15 +353,15 @@ const Chat: React.FC = () => {
       {pendingTransactions.length > 0 && (
         <Card className="p-0 bg-surface-primary">
           <CardContent className="p-4 flex flex-col space-y-4">
-            <div className="text-sm font-semibold">
-              The following transactions are ready to be executed:
+            <div className="w-full text-center text-sm font-semibold">
+              Transaction Confirmation
             </div>
             {pendingTransactions.map((tx, idx) => (
-              <div key={idx} className="rounded p-2 text-sm">
+              <div key={idx} className="rounded p-2 text-sm break-words">
                 <div>Transaction {idx + 1}:</div>
-                <div>To: {tx?.to}</div>
-                <div>Value: {tx.value}</div>
-                <div>Data: {tx.data}</div>
+                <div>To: {String(tx?.to)}</div>
+                <div>Value: {String(tx.value)}</div>
+                <div>Data: {String(tx.data)}</div>
               </div>
             ))}
 
