@@ -1,12 +1,12 @@
 import React, { useState, useRef, useCallback } from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { sepolia } from "thirdweb/chains";
 import { useThirdweb } from "../context/ThirdwebContext";
 import { Button } from "@/components/ui/button.js";
 import { useAnimatedDots } from "@/hooks/useAnimatedDots";
 import { sendTransaction } from "thirdweb";
-import { account, openai } from "@/lib/utils"; // <-- Make sure openai is imported
+import { account, openai } from "@/lib/utils";
 import { Nebula } from "thirdweb/ai";
 import { client } from "@/thirdweb/thirdwebClient.js";
 import { ChatVoiceButton } from "@/components/ChatButton";
@@ -18,7 +18,7 @@ type ChatMessage = {
 };
 
 const Chat: React.FC = () => {
-  // ---------------------- Original State and Hooks ----------------------
+  // ---------------------- State and Hooks ----------------------
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [prompt, setPrompt] = useState("");
   const [loading, setLoading] = useState(false);
@@ -26,24 +26,20 @@ const Chat: React.FC = () => {
   const [executingTx, setExecutingTx] = useState(false);
 
   const dots = useAnimatedDots(loading);
-  const { sessionId } = useThirdweb(); // Assume you have "account" from context or wherever
+  const { sessionId } = useThirdweb(); // from your context or environment
 
-  // ---------------------- New Voice Recording References ----------------------
-  // These are needed for recording and handling audio data
+  // ---------------------- Voice Recording Refs ----------------------
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const streamRef = useRef<MediaStream | null>(null);
 
-  // ---------------------------------------------------------------------------
-  // 1) A helper that sends a message given a string (used by typed AND voice)
-  // ---------------------------------------------------------------------------
+  // ---------------------- Helper to Send Any Text ----------------------
   const handleSendWithText = useCallback(
     async (text: string) => {
-      // Trim to avoid sending empty lines
       const cleanText = text.trim();
       if (!cleanText) return;
 
-      // Immediately add the user's message to the chat
+      // Add the user's message to chat
       const userMessage: ChatMessage = { role: "user", content: cleanText };
       setMessages((prev) => [...prev, userMessage]);
       setLoading(true);
@@ -93,9 +89,7 @@ const Chat: React.FC = () => {
     [sessionId]
   );
 
-  // ---------------------------------------------------------------------------
-  // 2) Original handleSend for typed messages (unchanged logic)
-  // ---------------------------------------------------------------------------
+  // ---------------------- handleSend (typed) ----------------------
   const handleSend = async (voiceInput?: string) => {
     if (!prompt && !voiceInput) return;
     if (voiceInput) {
@@ -105,9 +99,7 @@ const Chat: React.FC = () => {
     }
   };
 
-  // ---------------------------------------------------------------------------
-  // 3) Voice Recording: Start
-  // ---------------------------------------------------------------------------
+  // ---------------------- Voice Recording: Start ----------------------
   const startRecording = async () => {
     if (!navigator.mediaDevices || !window.MediaRecorder) {
       alert("Audio recording is not supported in this browser.");
@@ -134,16 +126,18 @@ const Chat: React.FC = () => {
           type: "audio/webm",
         });
 
-        // Now the final chunk has arrived; you can transcribe
         try {
+          // Convert to File
           const audioFile = new File([audioBlob], "recording.webm", {
             type: "audio/webm",
           });
 
+          // Send to Whisper for transcription
           const transcription = await openai.audio.transcriptions.create({
             file: audioFile,
             model: "whisper-1",
           });
+          // Send the transcribed text
           await handleSend(transcription?.text);
         } catch (error) {
           console.error("Whisper error:", error);
@@ -154,17 +148,21 @@ const Chat: React.FC = () => {
       console.log("mediaRecorder started");
     } catch (err) {
       console.error("Microphone access error:", err);
+      alert("Could not access microphone");
     }
   };
 
+  // ---------------------- Voice Recording: Stop ----------------------
   const stopRecording = async () => {
     if (!mediaRecorderRef.current) return;
     mediaRecorderRef.current.stop();
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => track.stop());
+      streamRef.current = null;
+    }
   };
 
-  // ---------------------------------------------------------------------------
-  // 5) Transaction Confirm/Decline (same as before)
-  // ---------------------------------------------------------------------------
+  // ---------------------- Transaction Confirm/Decline ----------------------
   const handleConfirmTransactions = async () => {
     setExecutingTx(true);
     setMessages((prev) => [
@@ -214,12 +212,7 @@ const Chat: React.FC = () => {
     setPendingTransactions([]);
   };
 
-  // ---------------------------------------------------------------------------
-  // 6) Render the page
-  //    - We attach both typed input (onClick -> handleSend)
-  //    - And voice start/stop events (onMouseDown -> startRecording,
-  //      onMouseUp -> stopRecording, etc.)
-  // ---------------------------------------------------------------------------
+  // ---------------------- Render ----------------------
   return (
     <PageLayout
       title="Chat"
@@ -246,6 +239,36 @@ const Chat: React.FC = () => {
         </div>
       }
     >
+      {/* Show the instructional card only if there are no chat messages yet */}
+      {messages.length === 0 && (
+        <Card className="bg-surface-primary border-none shadow-none my-4">
+          <CardHeader>
+            <CardTitle className="text-center text-xl font-bold">GM!</CardTitle>
+          </CardHeader>
+          <CardContent className="text-center space-y-4 text-sm md:text-base">
+            <p>
+              You can type your question and click <strong>Chat</strong> (or
+              press
+              <strong> Enter</strong>) to talk to the agent.
+            </p>
+            <p>
+              Or, <strong>long press</strong> the Chat button to record your
+              voice and automatically send the transcribed text using{" "}
+              <strong>OpenAI Whisper</strong>.
+            </p>
+            <p>
+              Behind the scenes, we use a combination of models such as{" "}
+              <strong>OpenAI</strong> and <strong>Claude</strong> to generate
+              responses and perform on-chain actions.
+            </p>
+            <p>
+              Swap, send, borrow, and lend crypto with just your voice or typed
+              queries. Enjoy the power of AI-driven interactions!
+            </p>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Chat Messages Thread */}
       <div className="flex flex-col space-y-2 mb-4">
         {messages.map((msg, idx) => (
