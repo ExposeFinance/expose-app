@@ -241,7 +241,7 @@ const Chat: React.FC = () => {
     >
       {/* Show the instructional card only if there are no chat messages yet */}
       {messages.length === 0 && (
-        <Card className="bg-surface-primary border-none shadow-none my-4">
+        <Card className="bg-surface-primary border-none shadow-none">
           <CardHeader>
             <CardTitle className="text-center text-xl font-bold">GM!</CardTitle>
           </CardHeader>
@@ -252,9 +252,9 @@ const Chat: React.FC = () => {
               <strong> Enter</strong>) to talk to the agent.
             </p>
             <p>
-              Or, <strong>long press</strong> the Chat button to record your
-              voice and automatically send the transcribed text using{" "}
-              <strong>OpenAI Whisper</strong>.
+              Or, <strong>long press</strong> the <strong>Chat</strong> button
+              to record your <strong>voice</strong> and automatically send the
+              transcribed text using <strong>OpenAI Whisper</strong>.
             </p>
             <p>
               Behind the scenes, we use a combination of models such as{" "}
@@ -262,9 +262,15 @@ const Chat: React.FC = () => {
               responses and perform on-chain actions.
             </p>
             <p>
-              Swap, send, borrow, and lend crypto with just your voice or typed
-              queries. Enjoy the power of AI-driven interactions!
+              Swap, send, borrow, and lend crypto with your{" "}
+              <strong>AI agent.</strong>
             </p>
+            <p>
+              Featuring a <strong>gasless</strong> and <strong>signless</strong>{" "}
+              UX, access to <strong>2500+ EVM chains</strong>, and{" "}
+              <strong>crosschain transactions</strong>.
+            </p>
+            <p>Enjoy the power of AI-driven interactions onchain!</p>
           </CardContent>
         </Card>
       )}

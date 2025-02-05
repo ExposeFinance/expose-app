@@ -18,7 +18,7 @@ function App() {
               <Route path="/wallet" element={<Wallet />} />
               <Route path="/chat" element={<Chat />} />
 
-              <Route path="*" element={<Wallet />} />
+              <Route path="*" element={<Chat />} />
             </Routes>
           </AppLayout>
         </Router>

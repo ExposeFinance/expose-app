@@ -5,8 +5,8 @@ import { cn } from "@/lib/utils";
 import { ComingSoonSheet } from "../ComingSoonBottomSheet";
 
 const navItems = [
-  { name: "Wallet", icon: <Lock />, path: "/wallet" },
   { name: "Chat", icon: <MessageCircle />, path: "/chat" },
+  { name: "Wallet", icon: <Lock />, path: "/wallet" },
   { name: "Orders", icon: <ArrowLeftRight />, path: "/orders" },
   { name: "Settings", icon: <Settings />, path: "/settings" },
 ];
