@@ -306,16 +306,13 @@ const Chat: React.FC = () => {
 
       {/* If we have transactions to confirm, show them */}
       {pendingTransactions.length > 0 && (
-        <Card className="p-0 bg-yellow-100">
+        <Card className="p-0 bg-surface-primary">
           <CardContent className="p-4 flex flex-col space-y-4">
-            <div className="text-sm text-black font-semibold">
+            <div className="text-sm font-semibold">
               The following transactions are ready to be executed:
             </div>
             {pendingTransactions.map((tx, idx) => (
-              <div
-                key={idx}
-                className="rounded border border-gray-300 p-2 text-sm"
-              >
+              <div key={idx} className="rounded p-2 text-sm">
                 <div>Transaction {idx + 1}:</div>
                 <div>To: {tx?.to}</div>
                 <div>Value: {tx.value}</div>
@@ -324,15 +321,20 @@ const Chat: React.FC = () => {
             ))}
 
             {/* Confirm/Decline Buttons */}
-            <div className="flex space-x-2">
+            <div className="flex space-x-2 grow w-full">
               <Button
                 onClick={handleConfirmTransactions}
                 disabled={executingTx}
-                variant="default"
+                variant="success"
+                className="flex-grow"
               >
                 {executingTx ? "Executing..." : "Yes, Execute"}
               </Button>
-              <Button onClick={handleDeclineTransactions} variant="outline">
+              <Button
+                onClick={handleDeclineTransactions}
+                variant="destructive"
+                className="flex-grow"
+              >
                 No, Cancel
               </Button>
             </div>

@@ -111,3 +111,11 @@
     --color-5: 90 100% 63%;
   }
 }
+
+@layer base {
+  * {
+  }
+  body {
+    @apply bg-background-primary text-text-primary;
+  }
+}

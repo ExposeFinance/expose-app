@@ -12,7 +12,9 @@ const buttonVariants = cva(
         default:
           "bg-[theme(colors.button.primary.bg)] text-[theme(colors.button.primary.text)] hover:opacity-90",
         destructive:
-          "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+          "bg-state-error-primary text-white-100 hover:bg-state-error-primary/90",
+        success:
+          "bg-state-success-primary text-white-100 hover:bg-state-success-primary/90",
         outline:
           "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
         secondary:
