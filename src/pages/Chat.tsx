@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from "react";
+import React, { useState, useRef, useCallback, useEffect } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { sepolia } from "thirdweb/chains";
@@ -25,6 +25,12 @@ const Chat: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [pendingTransactions, setPendingTransactions] = useState<any[]>([]);
   const [executingTx, setExecutingTx] = useState(false);
+
+  //Auto scroll to bottom when new message is added
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, loading]);
 
   const dots = useAnimatedDots(loading);
   const { sessionId } = useThirdweb(); // from your context or environment
@@ -302,6 +308,7 @@ const Chat: React.FC = () => {
             </CardContent>
           </Card>
         )}
+        <div ref={messagesEndRef} />
       </div>
 
       {/* If we have transactions to confirm, show them */}
