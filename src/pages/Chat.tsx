@@ -97,8 +97,6 @@ const Chat: React.FC = () => {
   // 2) Original handleSend for typed messages (unchanged logic)
   // ---------------------------------------------------------------------------
   const handleSend = async (voiceInput?: string) => {
-    console.log("handleSend triggered");
-    console.log(voiceInput);
     if (!prompt && !voiceInput) return;
     if (voiceInput) {
       await handleSendWithText(voiceInput);
@@ -111,50 +109,42 @@ const Chat: React.FC = () => {
   // 3) Voice Recording: Start
   // ---------------------------------------------------------------------------
   const startRecording = async () => {
-    console.log("startRecording triggered");
     if (!navigator.mediaDevices || !window.MediaRecorder) {
       alert("Audio recording is not supported in this browser.");
       return;
     }
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      console.log("Got stream:", stream);
       streamRef.current = stream;
 
       const mediaRecorder = new MediaRecorder(stream, {
         mimeType: "audio/webm",
       });
-      console.log("mediaRecorder created:", mediaRecorder);
       mediaRecorderRef.current = mediaRecorder;
       audioChunksRef.current = [];
 
       // Collect each chunk
       mediaRecorder.ondataavailable = (event) => {
-        console.log("ondataavailable chunk size:", event.data.size);
         audioChunksRef.current.push(event.data);
       };
 
       // When the recorder fully stops, create the Blob here
       mediaRecorder.onstop = async () => {
-        console.log("mediaRecorder onstop event fired");
         const audioBlob = new Blob(audioChunksRef.current, {
           type: "audio/webm",
         });
-        console.log("Final blob size:", audioBlob.size);
 
         // Now the final chunk has arrived; you can transcribe
         try {
           const audioFile = new File([audioBlob], "recording.webm", {
             type: "audio/webm",
           });
-          console.log("audioFile created:", audioFile);
 
           const transcription = await openai.audio.transcriptions.create({
             file: audioFile,
             model: "whisper-1",
           });
           await handleSend(transcription?.text);
-          console.log("transcription:", transcription);
         } catch (error) {
           console.error("Whisper error:", error);
         }
@@ -168,36 +158,8 @@ const Chat: React.FC = () => {
   };
 
   const stopRecording = async () => {
-    console.log("stopRecording triggered");
     if (!mediaRecorderRef.current) return;
-
     mediaRecorderRef.current.stop();
-    console.log("mediaRecorder stopped");
-
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach((track) => track.stop());
-      streamRef.current = null;
-      console.log("mic tracks stopped");
-    }
-
-    const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
-    console.log("Final blob size:", audioBlob.size);
-
-    try {
-      const audioFile = new File([audioBlob], "recording.webm", {
-        type: "audio/webm",
-      });
-      console.log("audioFile created:", audioFile);
-
-      const transcription = await openai.audio.transcriptions.create({
-        file: audioFile,
-        model: "whisper-1",
-      });
-      console.log("transcription:", transcription);
-      await handleSend(transcription?.text);
-    } catch (error) {
-      console.error("Whisper error:", error);
-    }
   };
 
   // ---------------------------------------------------------------------------
