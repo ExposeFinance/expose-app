@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback, useEffect } from "react";
+import React, { useState, useRef, useCallback } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { sepolia } from "thirdweb/chains";
@@ -47,7 +47,7 @@ const Chat: React.FC = () => {
       const userMessage: ChatMessage = { role: "user", content: cleanText };
       setMessages((prev) => [...prev, userMessage]);
       setLoading(true);
-      setPrompt(""); // Clear out the typed prompt (optional)
+      setPrompt("");
 
       try {
         // Call Nebula.chat with the provided text
@@ -97,78 +97,108 @@ const Chat: React.FC = () => {
   // 2) Original handleSend for typed messages (unchanged logic)
   // ---------------------------------------------------------------------------
   const handleSend = async (voiceInput?: string) => {
+    console.log("handleSend triggered");
+    console.log(voiceInput);
     if (!prompt && !voiceInput) return;
-    await handleSendWithText(voiceInput || prompt);
+    if (voiceInput) {
+      await handleSendWithText(voiceInput);
+    } else {
+      await handleSendWithText(prompt);
+    }
   };
 
   // ---------------------------------------------------------------------------
   // 3) Voice Recording: Start
   // ---------------------------------------------------------------------------
-  const stopRecording = useCallback(async () => {
-    if (!mediaRecorderRef.current) return;
-
-    mediaRecorderRef.current.stop();
-
-    // Stop all tracks in the stream
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach((track) => track.stop());
-      streamRef.current = null;
-    }
-
-    // Create audio blob and transcribe
-    const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
-
-    try {
-      // Convert Blob to File
-      const audioFile = new File([audioBlob], "recording.webm", {
-        type: "audio/webm",
-      });
-
-      // Send to OpenAI Whisper
-      const transcription = await openai.audio.transcriptions.create({
-        file: audioFile,
-        model: "whisper-1",
-      });
-
-      // Set the transcribed text as the prompt
-      setPrompt(transcription.text);
-      //Immediately call handleSend before prompt is set
-      await handleSend(transcription.text);
-    } catch (error) {
-      console.error("Whisper transcription error:", error);
-      //alert("Failed to transcribe audio"); -- Always throwing an error right now
-    }
-  }, []);
-
-  const startRecording = useCallback(async () => {
-    // Check if browser supports audio recording
+  const startRecording = async () => {
+    console.log("startRecording triggered");
     if (!navigator.mediaDevices || !window.MediaRecorder) {
       alert("Audio recording is not supported in this browser.");
       return;
     }
-
     try {
-      // Request microphone access
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      console.log("Got stream:", stream);
       streamRef.current = stream;
 
-      // Create MediaRecorder
-      const mediaRecorder = new MediaRecorder(stream);
+      const mediaRecorder = new MediaRecorder(stream, {
+        mimeType: "audio/webm",
+      });
+      console.log("mediaRecorder created:", mediaRecorder);
       mediaRecorderRef.current = mediaRecorder;
       audioChunksRef.current = [];
 
-      // Start recording
-      mediaRecorder.start();
-
-      // Handle data collection
+      // Collect each chunk
       mediaRecorder.ondataavailable = (event) => {
+        console.log("ondataavailable chunk size:", event.data.size);
         audioChunksRef.current.push(event.data);
       };
-    } catch (error) {
-      console.error("Microphone access error:", error);
-      alert("Could not access microphone");
+
+      // When the recorder fully stops, create the Blob here
+      mediaRecorder.onstop = async () => {
+        console.log("mediaRecorder onstop event fired");
+        const audioBlob = new Blob(audioChunksRef.current, {
+          type: "audio/webm",
+        });
+        console.log("Final blob size:", audioBlob.size);
+
+        // Now the final chunk has arrived; you can transcribe
+        try {
+          const audioFile = new File([audioBlob], "recording.webm", {
+            type: "audio/webm",
+          });
+          console.log("audioFile created:", audioFile);
+
+          const transcription = await openai.audio.transcriptions.create({
+            file: audioFile,
+            model: "whisper-1",
+          });
+          await handleSend(transcription?.text);
+          console.log("transcription:", transcription);
+        } catch (error) {
+          console.error("Whisper error:", error);
+        }
+      };
+
+      mediaRecorder.start();
+      console.log("mediaRecorder started");
+    } catch (err) {
+      console.error("Microphone access error:", err);
     }
-  }, []);
+  };
+
+  const stopRecording = async () => {
+    console.log("stopRecording triggered");
+    if (!mediaRecorderRef.current) return;
+
+    mediaRecorderRef.current.stop();
+    console.log("mediaRecorder stopped");
+
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => track.stop());
+      streamRef.current = null;
+      console.log("mic tracks stopped");
+    }
+
+    const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
+    console.log("Final blob size:", audioBlob.size);
+
+    try {
+      const audioFile = new File([audioBlob], "recording.webm", {
+        type: "audio/webm",
+      });
+      console.log("audioFile created:", audioFile);
+
+      const transcription = await openai.audio.transcriptions.create({
+        file: audioFile,
+        model: "whisper-1",
+      });
+      console.log("transcription:", transcription);
+      await handleSend(transcription?.text);
+    } catch (error) {
+      console.error("Whisper error:", error);
+    }
+  };
 
   // ---------------------------------------------------------------------------
   // 5) Transaction Confirm/Decline (same as before)
@@ -244,12 +274,9 @@ const Chat: React.FC = () => {
             className="flex-1"
           />
           <ChatVoiceButton
-            onClick={handleSend} // typed input: same as old code
-            onMouseDown={startRecording} // voice start
-            onMouseUp={stopRecording} // voice stop
-            onMouseLeave={stopRecording} // in case mouse leaves
-            onTouchStart={startRecording} // mobile: voice start
-            onTouchEnd={stopRecording} // mobile: voice stop
+            onClick={() => handleSend()} // short press => typed
+            onVoiceStart={startRecording} // long press => start
+            onVoiceStop={stopRecording} // release => stop
             disabled={loading}
           >
             {loading ? `Reasoning${dots}` : "Chat"}

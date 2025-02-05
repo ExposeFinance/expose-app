@@ -5,12 +5,16 @@ import { useAnimatedDots } from "@/hooks/useAnimatedDots";
 
 interface ChatVoiceButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  onClick?: () => void;
+  onClick?: () => void; // short press => typed
+  onVoiceStart?: () => void; // begin recording
+  onVoiceStop?: () => void; // stop recording
   children?: React.ReactNode;
 }
 
 export function ChatVoiceButton({
   onClick,
+  onVoiceStart,
+  onVoiceStop,
   children,
   ...props
 }: ChatVoiceButtonProps) {
@@ -18,36 +22,40 @@ export function ChatVoiceButton({
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const dots = useAnimatedDots(true);
 
-  // When the user presses down, start a timer.
+  // Press down => start a timer
   const handlePressStart = () => {
     timerRef.current = setTimeout(() => {
+      timerRef.current = null;
       setVoiceMode(true);
+      // Begin recording if provided
+      if (onVoiceStart) {
+        onVoiceStart();
+      }
     }, 500);
   };
 
-  // When the press ends, clear the timer.
-  // If the timer did not reach 500ms, fire the onClick for a normal chat action.
-  // Also reset voice mode if it was activated.
+  // Press ends => check if short or long
   const handlePressEnd = () => {
     if (timerRef.current) {
+      // Timer still active => short press => typed
       clearTimeout(timerRef.current);
       timerRef.current = null;
-    }
-
-    // If voice mode wasn't activated, treat it as a normal click.
-    if (!voiceMode && onClick) {
-      onClick();
-    }
-
-    // If voice mode was active, reset it on release.
-    if (voiceMode) {
-      setVoiceMode(false);
+      if (!voiceMode && onClick) {
+        onClick();
+      }
+    } else {
+      // Timer fired => voiceMode = true => stop recording
+      if (voiceMode) {
+        if (onVoiceStop) {
+          onVoiceStop();
+        }
+        setVoiceMode(false);
+      }
     }
   };
 
   return (
     <div
-      // Using both mouse and touch events for broader device support.
       onMouseDown={handlePressStart}
       onMouseUp={handlePressEnd}
       onMouseLeave={handlePressEnd}
