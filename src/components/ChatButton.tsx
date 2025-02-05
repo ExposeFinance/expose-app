@@ -6,9 +6,14 @@ import { useAnimatedDots } from "@/hooks/useAnimatedDots";
 interface ChatVoiceButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   onClick?: () => void;
+  children?: React.ReactNode;
 }
 
-export function ChatVoiceButton({ onClick, ...props }: ChatVoiceButtonProps) {
+export function ChatVoiceButton({
+  onClick,
+  children,
+  ...props
+}: ChatVoiceButtonProps) {
   const [voiceMode, setVoiceMode] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const dots = useAnimatedDots(true);
@@ -56,7 +61,7 @@ export function ChatVoiceButton({ onClick, ...props }: ChatVoiceButtonProps) {
         </PulsatingButton>
       ) : (
         <RainbowButton className="w-full" {...props}>
-          Chat
+          {children || "Chat"}
         </RainbowButton>
       )}
     </div>

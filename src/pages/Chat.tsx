@@ -1,4 +1,3 @@
-// src/pages/Chat.tsx
 import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { PageLayout } from "@/components/layout/PageLayout";
@@ -7,8 +6,7 @@ import { useThirdweb } from "../context/ThirdwebContext";
 import { Button } from "@/components/ui/button.js";
 import { useAnimatedDots } from "@/hooks/useAnimatedDots";
 import { sendTransaction } from "thirdweb";
-import { account, cn } from "@/lib/utils";
-import { RainbowButton } from "@/components/ui/rainbow-button.js";
+import { account } from "@/lib/utils";
 import { Nebula } from "thirdweb/ai";
 import { client } from "@/thirdweb/thirdwebClient.js";
 import { ChatVoiceButton } from "@/components/ChatButton";
