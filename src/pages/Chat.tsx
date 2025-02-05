@@ -294,7 +294,7 @@ const Chat: React.FC = () => {
             key={idx}
             className={`max-w-full px-2 ${
               msg.role === "user"
-                ? "self-end bg-pink-500 text-text-inverse"
+                ? "self-end bg-pink-500 text-text-white"
                 : "self-start bg-surface-primary"
             }`}
           >
