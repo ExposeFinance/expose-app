@@ -10,6 +10,7 @@ import { account } from "@/lib/utils";
 import { Nebula } from "thirdweb/ai";
 import { client } from "@/thirdweb/thirdwebClient.js";
 import { ChatVoiceButton } from "@/components/ChatButton";
+import { Input } from "@/components/ui/input";
 
 type ChatMessage = {
   role: "user" | "assistant";
@@ -138,16 +139,16 @@ const Chat: React.FC = () => {
     <PageLayout
       title="Chat"
       promptInput={
-        <div className="flex space-x-2">
-          <input
+        <div className="flex space-x-2 border-border-primary">
+          <Input
             type="text"
-            className="flex-1 p-2 border rounded text-text-primary bg-background-primary border-border-primary rounded-lg"
             placeholder="Type your message..."
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === "Enter") handleSend();
             }}
+            className="flex-1" // This ensures the input takes up available width.
           />
           <ChatVoiceButton onClick={handleSend} disabled={loading}>
             {loading ? `Reasoning${dots}` : "Chat"}
