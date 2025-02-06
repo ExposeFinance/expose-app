@@ -3,7 +3,7 @@ import { RainbowButton } from "@/components/ui/rainbow-button";
 import { PulsatingButton } from "@/components/ui/pulse-button";
 import { useAnimatedDots } from "@/hooks/useAnimatedDots";
 
-interface ChatVoiceButtonProps
+interface ChatButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   onClick?: () => void; // short press => typed
   onVoiceStart?: () => void; // begin recording
@@ -11,13 +11,13 @@ interface ChatVoiceButtonProps
   children?: React.ReactNode;
 }
 
-export function ChatVoiceButton({
+export function ChatButton({
   onClick,
   onVoiceStart,
   onVoiceStop,
   children,
   ...props
-}: ChatVoiceButtonProps) {
+}: ChatButtonProps) {
   const [voiceMode, setVoiceMode] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const dots = useAnimatedDots(true);
@@ -64,7 +64,6 @@ export function ChatVoiceButton({
       onPointerUp={handlePressEnd}
       onPointerCancel={handlePressEnd}
       onPointerLeave={handlePressEnd}
-      className="w-1/3"
       style={{
         touchAction: "none",
         userSelect: "none", // for modern browsers

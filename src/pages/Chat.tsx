@@ -9,9 +9,8 @@ import { PreparedTransaction, sendTransaction } from "thirdweb";
 import { account, openai } from "@/lib/utils";
 import { Nebula } from "thirdweb/ai";
 import { client } from "@/thirdweb/thirdwebClient.js";
-import { ChatVoiceButton } from "@/components/ChatButton";
-import { Input } from "@/components/ui/input";
 import { AnimatedShinyText } from "@/components/ui/shimmer-text";
+import { TextareaWithButton } from "@/components/InputPrompt";
 
 type ChatMessage = {
   role: "user" | "assistant";
@@ -35,7 +34,7 @@ const Chat: React.FC = () => {
   }, [messages, loading]);
 
   //Auto close keyboard on enter/chat click
-  const inputRef = useRef<HTMLInputElement | null>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
 
   const dots = useAnimatedDots(loading);
   const { sessionId } = useThirdweb(); // from your context or environment
@@ -230,27 +229,16 @@ const Chat: React.FC = () => {
     <PageLayout
       title="Chat"
       promptInput={
-        <div className="flex space-x-2">
-          <Input
-            ref={inputRef}
-            type="text"
-            placeholder="Type your message..."
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") handleSend();
-            }}
-            className="flex-1"
-          />
-          <ChatVoiceButton
-            onClick={() => handleSend()} // short press => typed
-            onVoiceStart={startRecording} // long press => start
-            onVoiceStop={stopRecording} // release => stop
-            disabled={loading}
-          >
-            {loading ? `Reasoning${dots}` : "Chat"}
-          </ChatVoiceButton>
-        </div>
+        <TextareaWithButton
+          ref={inputRef} // Forward the ref to the Textarea.
+          prompt={prompt}
+          setPrompt={setPrompt}
+          handleSend={handleSend}
+          loading={loading}
+          dots={dots}
+          startRecording={startRecording}
+          stopRecording={stopRecording}
+        />
       }
     >
       {/* Show the instructional card only if there are no chat messages yet */}
