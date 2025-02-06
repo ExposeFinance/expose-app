@@ -29,7 +29,7 @@ export const TextareaWithButton = forwardRef<
     ref
   ) => {
     return (
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2 space-y-2">
         <Textarea
           ref={ref}
           placeholder="Enter your message"

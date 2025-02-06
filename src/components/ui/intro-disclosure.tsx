@@ -153,7 +153,7 @@ function StepPreview({ step, direction }: { step: Step; direction: 1 | -1 }) {
             <h3 className="mb-2 text-2xl font-semibold text-primary">
               {step.title}
             </h3>
-            <p className="text-muted-foreground">{step.full_description}</p>
+            <p className="">{step.full_description}</p>
           </motion.div>
         </div>
       )}
@@ -184,7 +184,7 @@ function StepTab({ step, isActive, onClick, isCompleted }: StepTabProps) {
       aria-label={`${step.title}${isCompleted ? " (completed)" : ""}`}
     >
       <div className="mb-1 text-sm font-medium">{step.title}</div>
-      <div className="text-xs hidden md:block text-muted-foreground line-clamp-2">
+      <div className="text-xs hidden md:block line-clamp-2">
         {step.short_description}
       </div>
       {isCompleted && (
@@ -369,10 +369,11 @@ function StepContent({
               id="skipNextTime"
               checked={skipNextTime}
               onCheckedChange={(checked) => setSkipNextTime(checked as boolean)}
+              className=""
             />
             <label
               htmlFor="skipNextTime"
-              className="text-sm text-muted-foreground"
+              className="text-sm text-text-secondary"
             >
               Don't show this again
             </label>
@@ -403,7 +404,7 @@ export function IntroDisclosure({
 
   // Close the dialog if feature is hidden
   React.useEffect(() => {
-    if (!isVisible) {
+    if (!isVisible && open === true) {
       setOpen(true);
     }
   }, [isVisible, setOpen]);
@@ -634,7 +635,7 @@ export function IntroDisclosure({
                 />
                 <label
                   htmlFor="skipNextTime"
-                  className="text-sm text-muted-foreground"
+                  className="text-sm text-text-secondary"
                 >
                   Don't show this again
                 </label>
