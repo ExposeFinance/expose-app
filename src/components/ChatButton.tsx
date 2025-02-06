@@ -25,19 +25,25 @@ export function ChatButton({
   // Press down => start a timer
   const handlePressStart = (e: React.TouchEvent | React.MouseEvent) => {
     e.preventDefault(); // prevents default scrolling or long-press context menus
+
     timerRef.current = setTimeout(() => {
       timerRef.current = null;
       setVoiceMode(true);
 
-      // **New Code: Play the recording start sound**
       const audio = new Audio("/sounds/recording-start.mp3");
-      audio.play().catch((error) => {
-        console.error("Error playing recording start sound:", error);
-      });
-
-      if (onVoiceStart) {
-        onVoiceStart();
-      }
+      audio
+        .play()
+        .then(() => {
+          // Wait until after the audio starts playing to begin recording
+          setTimeout(() => {
+            if (onVoiceStart) {
+              onVoiceStart();
+            }
+          }, 700);
+        })
+        .catch((error) => {
+          console.error("Error playing recording start sound:", error);
+        });
     }, 500);
   };
 
