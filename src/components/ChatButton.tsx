@@ -28,12 +28,20 @@ export function ChatButton({
     timerRef.current = setTimeout(() => {
       timerRef.current = null;
       setVoiceMode(true);
+
+      // **New Code: Play the recording start sound**
+      const audio = new Audio("/sounds/recording-start.mp3");
+      audio.play().catch((error) => {
+        console.error("Error playing recording start sound:", error);
+      });
+
       if (onVoiceStart) {
         onVoiceStart();
       }
     }, 500);
   };
-  // Press ends => check if short or long
+
+  // Press ends => check if short or long press
   const handlePressEnd = () => {
     if (timerRef.current) {
       // Timer still active => short press => typed
@@ -43,7 +51,7 @@ export function ChatButton({
         onClick();
       }
     } else {
-      // Timer fired => voiceMode = true => stop recording
+      // Timer fired => voiceMode is active => stop recording
       if (voiceMode) {
         if (onVoiceStop) {
           onVoiceStop();
