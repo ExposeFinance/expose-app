@@ -106,14 +106,14 @@ function StepPreview({ step, direction }: { step: Step; direction: 1 | -1 }) {
   return (
     <motion.div
       {...slideInOut(direction)}
-      className="relative h-full w-full   overflow-hidden rounded-sm rounded-rb-lg rounded-tl-xl ring-2 ring-border-primary ring-offset-background-primary ring-offset-8"
+      className="relative h-full w-full   overflow-hidden rounded-sm rounded-rb-lg rounded-tl-xl ring-1 ring-separator-primary ring-offset-background-primary ring-offset-8"
     >
       {step.media ? (
-        <div className="relative bg-black h-full w-full">
+        <div className="relative h-full w-full">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={controls}
-            className="h-full w-full max-h-[700px]"
+            className="h-full w-full"
           >
             {step.media.type === "image" ? (
               <img
@@ -129,16 +129,16 @@ function StepPreview({ step, direction }: { step: Step; direction: 1 | -1 }) {
               />
             )}
           </motion.div>
-          <div className="absolute inset-0 bg-gradient-to-t from-background-primary to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black-100 to-transparent" />
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={controls}
             className="absolute bottom-0 left-0 right-0 p-6"
           >
-            <h3 className="mb-2 text-2xl font-semibold text-text-primary">
+            <h3 className="mb-2 text-2xl font-semibold text-white-100">
               {step.title}
             </h3>
-            <p className="text-text-primary hidden md:block">
+            <p className="text-white-100 hidden md:block">
               {step.full_description}
             </p>
           </motion.div>
@@ -150,7 +150,7 @@ function StepPreview({ step, direction }: { step: Step; direction: 1 | -1 }) {
             animate={controls}
             className="text-center"
           >
-            <h3 className="mb-2 text-2xl font-semibold text-primary">
+            <h3 className="mb-2 text-2xl font-semibold text-white-100">
               {step.title}
             </h3>
             <p className="">{step.full_description}</p>
@@ -175,9 +175,7 @@ function StepTab({ step, isActive, onClick, isCompleted }: StepTabProps) {
       onClick={onClick}
       className={cn(
         "flex flex-col items-start rounded-lg px-4 py-2 text-left transition-colors w-full",
-        isActive
-          ? "bg-surface-primary border border-border-primary"
-          : "hover:bg-surface-primary/70",
+        isActive ? "bg-surface-primary" : "hover:bg-surface-primary/70",
         "relative"
       )}
       aria-current={isActive ? "step" : undefined}
@@ -489,14 +487,14 @@ export function IntroDisclosure({
         >
           <DialogHeader
             data-aos="fade-in"
-            className="p-6 space-y-2 bg-surface-primary border-b border-border-primary"
+            className="p-6 space-y-2 bg-surface-primary "
           >
             <DialogTitle>Feature Tour</DialogTitle>
             {showProgressBar && (
-              <div className="flex mt-2 w-full justify-center  ">
+              <div className="flex mt-2 w-full justify-center">
                 <Progress
                   value={((currentStep + 1) / steps.length) * 100}
-                  className="  h-1 "
+                  className="h-1"
                 />
               </div>
             )}
@@ -566,13 +564,13 @@ export function IntroDisclosure({
                 ))}
               </div>
               {/* Preview */}
-              <div className="relative aspect-[16/9] ring-1 ring-border-primary ring-offset-8 ring-offset-background rounded-lg overflow-hidden">
+              <div className="relative aspect-[16/9] ring-1 ring-separator-primary ring-offset-8 ring-offset-background rounded-lg overflow-hidden">
                 <StepPreview step={steps[currentStep]} direction={direction} />
               </div>
 
               {/* Step content */}
-              <div className="space-y-4 border border-border-primary p-3 rounded-lg">
-                <p className="text-muted-foreground">
+              <div className="space-y-4 bg-surface-primary  p-3 rounded-lg">
+                <p className="text-text-primary">
                   {steps[currentStep]?.short_description}
                 </p>
                 {steps[currentStep]?.action && (
@@ -605,7 +603,7 @@ export function IntroDisclosure({
           </div>
 
           {/* Fixed bottom navigation */}
-          <div className="absolute bottom-0 left-0 right-0 border-t bg-background">
+          <div className="absolute bottom-0 left-0 right-0 border border-t-separator-primary">
             <div className="p-4">
               <div className="flex items-center justify-between mb-4">
                 <Button variant="default" onClick={onSkip} className="">
