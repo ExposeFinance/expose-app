@@ -482,12 +482,15 @@ export function IntroDisclosure({
 
   if (isDesktop) {
     return (
-      <Dialog open={open} onOpenChange={setOpen}>
+      <Dialog data-aos="fade-in" open={open} onOpenChange={setOpen}>
         <DialogContent
           className="max-w-5xl p-0 gap-0 overflow-hidden "
           onKeyDown={handleKeyDown}
         >
-          <DialogHeader className="p-6 space-y-2 bg-surface-primary border-b border-border-primary">
+          <DialogHeader
+            data-aos="fade-in"
+            className="p-6 space-y-2 bg-surface-primary border-b border-border-primary"
+          >
             <DialogTitle>Feature Tour</DialogTitle>
             {showProgressBar && (
               <div className="flex mt-2 w-full justify-center  ">
@@ -499,7 +502,7 @@ export function IntroDisclosure({
             )}
           </DialogHeader>
 
-          <div className="grid grid-cols-2 h-full">
+          <div className="grid grid-cols-2 h-full" data-aos="fade-in">
             <div className="p-2 pr-[18px] ">
               <StepContent
                 steps={steps}
@@ -529,8 +532,8 @@ export function IntroDisclosure({
   }
 
   return (
-    <Drawer open={open} onOpenChange={setOpen}>
-      <DrawerContent className="h-[95vh] max-h-[95vh] ">
+    <Drawer data-aos="fade-in" open={open} onOpenChange={setOpen}>
+      <DrawerContent className="h-[95vh] max-h-[95vh] " data-aos="fade-in">
         <motion.div
           drag="x"
           dragConstraints={{ left: 0, right: 0 }}
@@ -548,7 +551,7 @@ export function IntroDisclosure({
             <DrawerTitle>{steps[currentStep]?.title}</DrawerTitle>
           </DrawerHeader>
 
-          <div className="flex-1 overflow-y-auto">
+          <div className="flex-1 overflow-y-auto" data-aos="fade-in">
             <div className="p-4 space-y-4 pb-32">
               {/* Step tabs */}
               <div className="grid grid-cols-2 gap-2 mb-6">
