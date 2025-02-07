@@ -21,6 +21,8 @@ export function ChatButton({
   const [voiceMode, setVoiceMode] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const dots = useAnimatedDots(true);
+  const startSound = new Audio("/sounds/beep-up.wav");
+  const endSound = new Audio("/sounds/beep-down.wav");
 
   // Press down => start a timer
   const handlePressStart = (e: React.TouchEvent | React.MouseEvent) => {
@@ -30,8 +32,7 @@ export function ChatButton({
       timerRef.current = null;
       setVoiceMode(true);
 
-      const audio = new Audio("/sounds/recording-start.mp3");
-      audio
+      startSound
         .play()
         .then(() => {
           // Wait until after the audio starts playing to begin recording
@@ -39,12 +40,12 @@ export function ChatButton({
             if (onVoiceStart) {
               onVoiceStart();
             }
-          }, 700);
+          }, 300);
         })
         .catch((error) => {
           console.error("Error playing recording start sound:", error);
         });
-    }, 500);
+    }, 100);
   };
 
   // Press ends => check if short or long press
@@ -61,6 +62,7 @@ export function ChatButton({
       if (voiceMode) {
         if (onVoiceStop) {
           onVoiceStop();
+          endSound.play();
         }
         setVoiceMode(false);
       }

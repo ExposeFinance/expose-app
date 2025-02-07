@@ -122,11 +122,7 @@ function StepPreview({ step, direction }: { step: Step; direction: 1 | -1 }) {
                 className="object-cover w-full h-full"
               />
             ) : (
-              <video
-                src={step.media.src}
-                controls
-                className="h-full w-full object-cover"
-              />
+              <video src={step.media.src} controls className="h-full w-full" />
             )}
           </motion.div>
           <div className="absolute inset-0 bg-gradient-to-t from-black-100 to-transparent" />
