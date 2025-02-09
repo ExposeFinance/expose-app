@@ -10,8 +10,10 @@ import {
   useActiveAccount,
   useWalletBalance,
 } from "thirdweb/react";
+import { useUserProfile } from "@/hooks/useUserProfile";
 
 export default function Home() {
+  const userProfile = useUserProfile();
   const activeAccount = useActiveAccount();
   const walletAddress = activeAccount?.address;
   const { data, isLoading, isError } = useWalletBalance({
@@ -29,7 +31,6 @@ export default function Home() {
     },
   ];
 
-  console.log(data);
   return (
     <PageLayout title="Wallet">
       <div className="flex flex-col h-full space-y-4">
@@ -60,16 +61,13 @@ export default function Home() {
         >
           <>
             <Avatar className="w-24 h-24">
-              <AvatarImage
-                src={"https://github.com/shadcn.png"}
-                alt="dummy user"
-              />
+              <AvatarImage src={userProfile.profileImage} alt="dummy user" />
               <AvatarFallback className="bg-primary text-[theme(colors.text.primary)]">
-                {"Vitalik"}
+                {userProfile.name}
               </AvatarFallback>
             </Avatar>
             <h2 className="text-xl font-semibold text-[theme(colors.text.primary)]">
-              {"Vitalik"}
+              {userProfile.name}
             </h2>
             <ConnectButton client={client}></ConnectButton>
           </>

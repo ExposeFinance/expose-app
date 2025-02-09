@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import ThirdwebProvider from "./components/providers/ThirdwebProvider";
 import { NebulaProvider } from "./context/NebulaContext";
 import { AgentProvider } from "@/context/AgentContext";
+import { UserProfileProvider } from "./context/UserProfileContext";
 
 const steps = [
   {
@@ -133,20 +134,22 @@ function App() {
 
       <ThirdwebProvider>
         <NebulaProvider>
-          <AgentProvider>
-            <AlertProvider>
-              <Router>
-                <AppLayout>
-                  <Routes>
-                    <Route path="/wallet" element={<Wallet />} />
-                    <Route path="/chat" element={<Chat />} />
+          <UserProfileProvider>
+            <AgentProvider>
+              <AlertProvider>
+                <Router>
+                  <AppLayout>
+                    <Routes>
+                      <Route path="/wallet" element={<Wallet />} />
+                      <Route path="/chat" element={<Chat />} />
 
-                    <Route path="*" element={<Chat />} />
-                  </Routes>
-                </AppLayout>
-              </Router>
-            </AlertProvider>
-          </AgentProvider>
+                      <Route path="*" element={<Chat />} />
+                    </Routes>
+                  </AppLayout>
+                </Router>
+              </AlertProvider>
+            </AgentProvider>
+          </UserProfileProvider>
         </NebulaProvider>
       </ThirdwebProvider>
     </>

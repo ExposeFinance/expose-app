@@ -11,7 +11,7 @@ export interface AgentContextType {
   setAgent: (agent: Agent) => void;
 }
 
-const DEFAULT_AGENT: Agent = {
+export const DEFAULT_AGENT: Agent = {
   name: "Expose",
   voiceId: "EXAVITQu4vr4xnSDxMaL", // Default ElevenLabs voice ID
   profileImage: "/expose-logo.png", // Default profile image

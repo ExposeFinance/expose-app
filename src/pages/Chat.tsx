@@ -412,7 +412,9 @@ const Chat: React.FC = () => {
               {/* Avatar */}
               <img
                 src={
-                  isUser ? "https://github.com/shadcn.png" : "/expose-logo.png"
+                  isUser
+                    ? "https://github.com/shadcn.png"
+                    : `${agent.profileImage}`
                 }
                 alt={isUser ? "User Avatar" : "Assistant Avatar"}
                 className="w-8 h-8 rounded-full m-2"
