@@ -1,5 +1,4 @@
 import { client } from "./thirdwebClient.js";
-import { account } from "@/lib/utils";
 import { sepolia, base, baseSepolia } from "thirdweb/chains";
 
 type NebulaCreateSessionInput = {
@@ -56,7 +55,7 @@ export default async function nebulaCreateSession(
         title: input.title,
         execute_config: {
           mode: "client",
-          signer_wallet_address: account.address,
+          // signer_wallet_address: account.address,
         },
         context_filter: {
           chain_ids: [

@@ -1,7 +1,6 @@
 import { Nebula } from "thirdweb/ai";
 import { Account } from "thirdweb/wallets";
 import { client } from "./thirdwebClient.js";
-import { account } from "@/lib/utils";
 
 type NebulaExecuteInput = Omit<Nebula.Input, "client"> & {
   client?: Nebula.Input["client"];
@@ -13,7 +12,7 @@ export default async function nebulaExecute(input: NebulaExecuteInput) {
     const result = await Nebula.execute({
       ...input,
       client: input.client || client,
-      account: account as Account,
+      account: input.account,
     } as Nebula.Input & { account: Account });
     return result;
   } catch (error) {

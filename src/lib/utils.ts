@@ -13,13 +13,13 @@ export const getCssVariable = (variableName: string) => {
     .trim() as `#${string}`;
 };
 
-import { privateKeyToAccount } from "thirdweb/wallets";
-import { client } from "../thirdweb/thirdwebClient.js";
+// import { privateKeyToAccount } from "thirdweb/wallets";
+// import { client } from "../thirdweb/thirdwebClient.js";
 
-export const account = privateKeyToAccount({
-  client: client,
-  privateKey: import.meta.env.VITE_PRIVATE_KEY,
-});
+// export const account = privateKeyToAccount({
+//   client: client,
+//   privateKey: import.meta.env.VITE_PRIVATE_KEY,
+// });
 
 import OpenAI from "openai";
 
