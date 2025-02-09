@@ -11,6 +11,7 @@ import { NebulaProvider } from "./context/NebulaContext";
 import { AgentProvider } from "@/context/AgentContext";
 import { UserProfileProvider } from "./context/UserProfileContext";
 import Settings from "./pages/Settings";
+import { ChatProvider } from "./context/ChatContext";
 
 const steps = [
   {
@@ -137,19 +138,21 @@ function App() {
         <NebulaProvider>
           <UserProfileProvider>
             <AgentProvider>
-              <AlertProvider>
-                <Router>
-                  <AppLayout>
-                    <Routes>
-                      <Route path="/wallet" element={<Wallet />} />
-                      <Route path="/chat" element={<Chat />} />
-                      <Route path="/settings" element={<Settings />} />
+              <ChatProvider>
+                <AlertProvider>
+                  <Router>
+                    <AppLayout>
+                      <Routes>
+                        <Route path="/wallet" element={<Wallet />} />
+                        <Route path="/chat" element={<Chat />} />
+                        <Route path="/settings" element={<Settings />} />
 
-                      <Route path="*" element={<Chat />} />
-                    </Routes>
-                  </AppLayout>
-                </Router>
-              </AlertProvider>
+                        <Route path="*" element={<Chat />} />
+                      </Routes>
+                    </AppLayout>
+                  </Router>
+                </AlertProvider>
+              </ChatProvider>
             </AgentProvider>
           </UserProfileProvider>
         </NebulaProvider>

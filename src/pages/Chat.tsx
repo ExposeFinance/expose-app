@@ -13,15 +13,12 @@ import { AnimatedShinyText } from "@/components/ui/shimmer-text";
 import { TextareaWithButton } from "@/components/InputPrompt";
 import { useActiveAccount } from "thirdweb/react";
 import { useAgent } from "@/hooks/useAgent";
-
-type ChatMessage = {
-  role: "user" | "assistant";
-  content: string;
-};
+import { useChat } from "@/hooks/useChat";
+import { ChatMessage } from "@/context/ChatContext";
 
 const Chat: React.FC = () => {
   // ---------------------- State and Hooks ----------------------
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const { messages, addMessage } = useChat();
   const [prompt, setPrompt] = useState("");
   const [loading, setLoading] = useState(false);
   const [pendingTransactions, setPendingTransactions] = useState<
@@ -56,7 +53,7 @@ const Chat: React.FC = () => {
 
       // Add the user's message to chat
       const userMessage: ChatMessage = { role: "user", content: cleanText };
-      setMessages((prev) => [...prev, userMessage]);
+      addMessage(userMessage);
       setLoading(true);
       setPrompt("");
 
@@ -73,13 +70,10 @@ const Chat: React.FC = () => {
         });
 
         // Show the assistant's response
-        setMessages((prev) => [
-          ...prev,
-          {
-            role: "assistant",
-            content: response.message || "No message returned",
-          },
-        ]);
+        addMessage({
+          role: "assistant",
+          content: response.message || "No message returned",
+        });
 
         // If there are transactions, store them so we can confirm
         if (response.transactions && response.transactions.length > 0) {
@@ -87,21 +81,18 @@ const Chat: React.FC = () => {
         }
       } catch (error) {
         console.error("Error during nebulaChat:", error);
-        setMessages((prev) => [
-          ...prev,
-          {
-            role: "assistant",
-            content:
-              error instanceof Error
-                ? `Error: ${error.message}`
-                : "Unknown error occurred",
-          },
-        ]);
+        addMessage({
+          role: "assistant",
+          content:
+            error instanceof Error
+              ? `Error: ${error.message}`
+              : "Unknown error occurred",
+        });
       } finally {
         setLoading(false);
       }
     },
-    [sessionId]
+    [sessionId, addMessage, account]
   );
 
   // ---------------------- handleSend (typed) ----------------------
@@ -279,29 +270,36 @@ const Chat: React.FC = () => {
     isProcessingQueueRef.current = false; // Queue processing is done
   };
 
-  // When a new assistant message is added, process it immediately
+  // Add lastProcessedIndexRef to ensure each assistant message is processed only once
+  const lastProcessedIndexRef = useRef<number>(-1);
   useEffect(() => {
-    const lastMessage = messages[messages.length - 1];
-    if (lastMessage && lastMessage.role === "assistant") {
-      const sentences = lastMessage.content.split(/(?<=[.!?])\s+/); // Split into sentences
-      const firstSentence = sentences.slice(0, 1).join(" "); // Take the first two
-      if (firstSentence.trim()) {
-        messageQueueRef.current.push(firstSentence);
-        processMessageQueue(); // Start processing queue immediately
+    if (messages.length > lastProcessedIndexRef.current + 1) {
+      for (
+        let i = lastProcessedIndexRef.current + 1;
+        i < messages.length;
+        i++
+      ) {
+        const msg = messages[i];
+        if (msg.role === "assistant") {
+          const sentences = msg.content.split(/(?<=[.!?])\s+/);
+          const firstSentence = sentences.slice(0, 1).join(" ");
+          if (firstSentence.trim()) {
+            messageQueueRef.current.push(firstSentence);
+          }
+        }
       }
+      lastProcessedIndexRef.current = messages.length - 1;
+      processMessageQueue();
     }
   }, [messages]);
 
   // ---------------------- Transaction Confirm/Decline ----------------------
   const handleConfirmTransactions = async () => {
     setExecutingTx(true);
-    setMessages((prev) => [
-      ...prev,
-      {
-        role: "assistant",
-        content: `Executing transactions${dots}`,
-      },
-    ]);
+    addMessage({
+      role: "assistant",
+      content: `Executing transactions${dots}`,
+    });
 
     try {
       for (const tx of pendingTransactions) {
@@ -310,26 +308,20 @@ const Chat: React.FC = () => {
             transaction: tx,
             account: account,
           });
-          setMessages((prev) => [
-            ...prev,
-            {
-              role: "assistant",
-              content: `✅ Transaction executed successfully! Tx Hash: ${txReceipt?.transactionHash}`,
-            },
-          ]);
+          addMessage({
+            role: "assistant",
+            content: `✅ Transaction executed successfully! Tx Hash: ${txReceipt?.transactionHash}`,
+          });
         }
       }
     } catch (err) {
       console.error("Error executing transaction:", err);
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "assistant",
-          content: `Error executing transaction: ${
-            err instanceof Error ? err.message : err
-          }`,
-        },
-      ]);
+      addMessage({
+        role: "assistant",
+        content: `Error executing transaction: ${
+          err instanceof Error ? err.message : err
+        }`,
+      });
     } finally {
       setExecutingTx(false);
       setPendingTransactions([]); // Clear out after execution
@@ -337,10 +329,10 @@ const Chat: React.FC = () => {
   };
 
   const handleDeclineTransactions = () => {
-    setMessages((prev) => [
-      ...prev,
-      { role: "assistant", content: "Transactions were not executed." },
-    ]);
+    addMessage({
+      role: "assistant",
+      content: "Transactions were not executed.",
+    });
     setPendingTransactions([]);
   };
 
@@ -370,8 +362,7 @@ const Chat: React.FC = () => {
           <CardContent className="text-center space-y-4 text-sm md:text-base">
             <p>
               You can type your question and click <strong>Chat</strong> (or
-              press
-              <strong> Enter</strong>) to talk to the agent.
+              press <strong>Enter</strong>) to talk to the agent.
             </p>
             <p>
               Or, <strong>long press</strong> the <strong>Chat</strong> button

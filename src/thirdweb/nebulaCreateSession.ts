@@ -64,7 +64,7 @@ export default async function nebulaCreateSession(
             base.id.toString(),
           ],
           contract_addresses: [],
-          wallet_addresses: [account.address],
+          // wallet_addresses: [account.address],
         },
       }),
     });
