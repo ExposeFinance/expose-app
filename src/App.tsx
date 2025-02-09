@@ -8,6 +8,7 @@ import { IntroDisclosure } from "@/components/ui/intro-disclosure";
 import { useEffect, useState } from "react";
 import ThirdwebProvider from "./components/providers/ThirdwebProvider";
 import { NebulaProvider } from "./context/NebulaContext";
+import { AgentProvider } from "@/context/AgentContext";
 
 const steps = [
   {
@@ -132,18 +133,20 @@ function App() {
 
       <ThirdwebProvider>
         <NebulaProvider>
-          <AlertProvider>
-            <Router>
-              <AppLayout>
-                <Routes>
-                  <Route path="/wallet" element={<Wallet />} />
-                  <Route path="/chat" element={<Chat />} />
+          <AgentProvider>
+            <AlertProvider>
+              <Router>
+                <AppLayout>
+                  <Routes>
+                    <Route path="/wallet" element={<Wallet />} />
+                    <Route path="/chat" element={<Chat />} />
 
-                  <Route path="*" element={<Chat />} />
-                </Routes>
-              </AppLayout>
-            </Router>
-          </AlertProvider>
+                    <Route path="*" element={<Chat />} />
+                  </Routes>
+                </AppLayout>
+              </Router>
+            </AlertProvider>
+          </AgentProvider>
         </NebulaProvider>
       </ThirdwebProvider>
     </>

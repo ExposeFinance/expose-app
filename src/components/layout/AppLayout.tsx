@@ -78,9 +78,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
 
               {/* Wallet Connect Modal */}
               <div className="relative p-6 bg-surface-primary rounded-lg shadow-lg text-center flex flex-col items-center">
-                <h2 className="text-xl font-bold mb-4">
-                  Connect Your Wallet to Proceed
-                </h2>
+                <h2 className="text-xl font-bold mb-4">Login</h2>
                 <ConnectButton
                   client={client}
                   accountAbstraction={{ chain: sepolia, sponsorGas: true }}

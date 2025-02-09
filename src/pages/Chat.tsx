@@ -12,6 +12,7 @@ import { client } from "@/thirdweb/thirdwebClient.js";
 import { AnimatedShinyText } from "@/components/ui/shimmer-text";
 import { TextareaWithButton } from "@/components/InputPrompt";
 import { useActiveAccount } from "thirdweb/react";
+import { useAgent } from "@/hooks/useAgent";
 
 type ChatMessage = {
   role: "user" | "assistant";
@@ -27,6 +28,7 @@ const Chat: React.FC = () => {
     PreparedTransaction[]
   >([]);
   const [executingTx, setExecutingTx] = useState(false);
+  const { agent } = useAgent();
 
   //Auto scroll to bottom when new message is added
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
@@ -186,11 +188,7 @@ const Chat: React.FC = () => {
   const isProcessingQueueRef = useRef<boolean>(false); // Prevents duplicate queue processing
 
   const fetchAudioForMessage = async (text: string) => {
-    const storedVoiceId = localStorage.getItem("elevenlabsVoiceId");
-    const voiceId =
-      storedVoiceId ||
-      import.meta.env.VITE_ELEVENLABS_VOICE_ID ||
-      "EXAVITQu4vr4xnSDxMaL";
+    const voiceId = agent.voiceId;
     const apiKey = import.meta.env.VITE_ELEVENLABS_API_KEY;
 
     if (!voiceId || !apiKey) {
@@ -441,14 +439,14 @@ const Chat: React.FC = () => {
           <div className="flex items-end">
             {/* Assistant avatar on the left */}
             <img
-              src="/expose-logo.png"
+              src={agent.profileImage}
               alt="Assistant Avatar"
               className="w-8 h-8 rounded-full m-2"
             />
             <Card className="max-w-[70%] p-0 self-start bg-surface-primary">
               <CardContent className="p-2">
                 <AnimatedShinyText className="text-sm text-text-secondary break-words">
-                  ✨ Agent is responding{dots}
+                  ✨ {agent.name} is responding{dots}
                 </AnimatedShinyText>
               </CardContent>
             </Card>
