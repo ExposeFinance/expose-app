@@ -2,6 +2,7 @@
 
 <img width="100%" alt="Screenshot 2025-02-09 at 6 16 55 pm" src="https://github.com/user-attachments/assets/9f40bad3-a8e9-4305-a336-a4835e173e35" />
 
+
 Welcome to the **Expose App**!
 
 Swap, send, borrow and lend crypto with just your voice!
