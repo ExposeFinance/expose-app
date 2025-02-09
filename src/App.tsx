@@ -10,6 +10,7 @@ import ThirdwebProvider from "./components/providers/ThirdwebProvider";
 import { NebulaProvider } from "./context/NebulaContext";
 import { AgentProvider } from "@/context/AgentContext";
 import { UserProfileProvider } from "./context/UserProfileContext";
+import Settings from "./pages/Settings";
 
 const steps = [
   {
@@ -142,6 +143,7 @@ function App() {
                     <Routes>
                       <Route path="/wallet" element={<Wallet />} />
                       <Route path="/chat" element={<Chat />} />
+                      <Route path="/settings" element={<Settings />} />
 
                       <Route path="*" element={<Chat />} />
                     </Routes>

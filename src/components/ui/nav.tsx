@@ -39,14 +39,14 @@ export default function NavBar() {
               location.pathname === item.path ||
               location.pathname.startsWith(item.path + "/");
 
-            if (item.path === "/orders" || item.path === "/settings") {
+            if (item.path === "/orders") {
               // Show Bottom Sheet for not launched features
               return (
                 <div
                   key={item.name}
                   onClick={() =>
                     openBottomSheet(
-                      `Soon you'll be able to mange your agent settings and monitor automated orders made by your agent!`
+                      `Soon you'll be able to mange automated orders made by your agent!`
                     )
                   }
                   className={cn(
