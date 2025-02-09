@@ -283,9 +283,9 @@ const Chat: React.FC = () => {
     const lastMessage = messages[messages.length - 1];
     if (lastMessage && lastMessage.role === "assistant") {
       const sentences = lastMessage.content.split(/(?<=[.!?])\s+/); // Split into sentences
-      const firstTwoSentences = sentences.slice(0, 2).join(" "); // Take the first two
-      if (firstTwoSentences.trim()) {
-        messageQueueRef.current.push(firstTwoSentences);
+      const firstSentence = sentences.slice(0, 1).join(" "); // Take the first one
+      if (firstSentence.trim()) {
+        messageQueueRef.current.push(firstSentence);
         processMessageQueue(); // Start processing queue if idle
       }
     }
