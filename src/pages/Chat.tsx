@@ -378,11 +378,6 @@ const Chat: React.FC = () => {
               Swap, send, borrow, and lend crypto with your{" "}
               <strong>AI agent.</strong>
             </p>
-            <p>
-              Featuring a <strong>gasless</strong> and <strong>signless</strong>{" "}
-              UX, access to <strong>2500+ EVM chains</strong>, and{" "}
-              <strong>crosschain transactions</strong>.
-            </p>
             <p>Enjoy the power of AI-driven interactions onchain!</p>
           </CardContent>
         </Card>

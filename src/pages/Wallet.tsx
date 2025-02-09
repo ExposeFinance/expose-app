@@ -1,7 +1,7 @@
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 // import { Skeleton } from "@/components/ui/skeleton";
-import { ShieldCheck } from "lucide-react";
+import { WalletIcon } from "lucide-react";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { sepolia } from "thirdweb/chains";
 import { client } from "@/thirdweb/thirdwebClient";
@@ -42,16 +42,17 @@ export default function Home() {
         >
           <CardHeader>
             <CardTitle className="text-center text-xl font-bold">
-              Introducing Expose Wallet
+              Your New Super-Agent Wallet
             </CardTitle>
           </CardHeader>
-          <CardContent className="text-center space-y-4">
+          <CardContent className="text-center space-y-4 text-sm md:text-base">
             <div className="text-4xl flex justify-center">
-              <ShieldCheck className="w-10 h-10" />
+              <WalletIcon className="w-10 h-10" />
             </div>
-            <p className="text-sm">
-              Secure MPC smart wallet with gasless and signless UX supporting
-              2500+ EVM chains and crosschain transfers
+            <p>
+              Featuring a <strong>gasless</strong> and <strong>signless</strong>{" "}
+              UX, access to <strong>2500+ EVM chains</strong>, and{" "}
+              <strong>crosschain transactions</strong>.
             </p>
           </CardContent>
         </Card>
