@@ -50,7 +50,8 @@ export default function Home() {
               <ShieldCheck className="w-10 h-10" />
             </div>
             <p className="text-sm">
-              Swap, send, borrow and lend crypto with just your voice!
+              Secure MPC smart wallet with gasless and signless UX supporting
+              2500+ EVM chains and crosschain transfers
             </p>
           </CardContent>
         </Card>
@@ -70,12 +71,20 @@ export default function Home() {
             <h2 className="text-xl font-semibold text-[theme(colors.text.primary)]">
               {userProfile.name}
             </h2>
-            <ConnectButton client={client}></ConnectButton>
+            <ConnectButton
+              detailsButton={{
+                style: {
+                  borderRadius: "20px",
+                },
+              }}
+              client={client}
+            ></ConnectButton>
           </>
         </div>
 
         {/* Wallet Section */}
         <div className="space-y-4" data-aos="fade-in">
+          <h2 className="text-lg font-semibold">Balances</h2>
           {walletData.map((item) => (
             <Card
               key={item.id}
