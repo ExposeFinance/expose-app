@@ -74,7 +74,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
           {!isWalletConnected && (
             <div className="fixed inset-0 flex items-center justify-center z-50">
               {/* Full-screen background overlay */}
-              <div className="absolute inset-0 bg-background-primary"></div>
+              <div className="absolute inset-0 bg-background-primary opacity-80"></div>
 
               {/* Wallet Connect Modal */}
               <div className="relative p-6 bg-surface-primary rounded-lg shadow-lg text-center flex flex-col items-center">
