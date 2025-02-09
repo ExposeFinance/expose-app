@@ -221,6 +221,7 @@ const Chat: React.FC = () => {
       if (!response.ok) {
         const errorText = await response.text();
         console.error("Error from ElevenLabs:", errorText);
+        isFetchingRef.current = false;
         return null;
       }
 
@@ -243,19 +244,20 @@ const Chat: React.FC = () => {
       messageQueueRef.current.length > 0 ||
       audioQueueRef.current.length > 0
     ) {
-      // Ensure that audio is fetched while previous one is playing
+      // Fetch audio while other messages play
       if (messageQueueRef.current.length > 0 && !isFetchingRef.current) {
         const nextMessage = messageQueueRef.current.shift();
         if (nextMessage) {
           fetchAudioForMessage(nextMessage).then((audioUrl) => {
             if (audioUrl) {
               audioQueueRef.current.push(audioUrl);
+              processMessageQueue(); // Restart queue in case it's waiting
             }
           });
         }
       }
 
-      // Play next available audio if nothing is playing
+      // Play the next available audio if nothing is currently playing
       if (!isSpeakingRef.current && audioQueueRef.current.length > 0) {
         const audioUrl = audioQueueRef.current.shift();
         if (audioUrl) {
@@ -272,21 +274,21 @@ const Chat: React.FC = () => {
         }
       }
 
-      await new Promise((r) => setTimeout(r, 100)); // Prevent CPU-intensive loop
+      await new Promise((r) => setTimeout(r, 100)); // Prevent CPU-intensive looping
     }
 
     isProcessingQueueRef.current = false; // Queue processing is done
   };
 
-  // When a new assistant message is added, prefetch audio while playing existing messages.
+  // When a new assistant message is added, process it immediately
   useEffect(() => {
     const lastMessage = messages[messages.length - 1];
     if (lastMessage && lastMessage.role === "assistant") {
       const sentences = lastMessage.content.split(/(?<=[.!?])\s+/); // Split into sentences
-      const firstSentence = sentences.slice(0, 1).join(" "); // Take the first one
-      if (firstSentence.trim()) {
-        messageQueueRef.current.push(firstSentence);
-        processMessageQueue(); // Start processing queue if idle
+      const firstTwoSentences = sentences.slice(0, 2).join(" "); // Take the first two
+      if (firstTwoSentences.trim()) {
+        messageQueueRef.current.push(firstTwoSentences);
+        processMessageQueue(); // Start processing queue immediately
       }
     }
   }, [messages]);
