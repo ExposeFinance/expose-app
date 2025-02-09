@@ -1,7 +1,7 @@
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 // import { Skeleton } from "@/components/ui/skeleton";
-import { CircleDollarSign, ShieldCheck } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { sepolia } from "thirdweb/chains";
 import { client } from "@/thirdweb/thirdwebClient";
@@ -11,12 +11,13 @@ import {
   useWalletBalance,
 } from "thirdweb/react";
 import { useUserProfile } from "@/hooks/useUserProfile";
+import EthLogo from "@/components/EthLogo";
 
 export default function Home() {
   const userProfile = useUserProfile();
   const activeAccount = useActiveAccount();
   const walletAddress = activeAccount?.address;
-  const { data, isLoading, isError } = useWalletBalance({
+  const { data } = useWalletBalance({
     chain: sepolia,
     address: walletAddress,
     client,
@@ -27,7 +28,7 @@ export default function Home() {
       id: 1,
       name: "ETH",
       amount: `${data?.displayValue}`,
-      icon: <CircleDollarSign className="text-yellow-1000" />,
+      icon: <EthLogo size={35} />,
     },
   ];
 
