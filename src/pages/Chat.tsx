@@ -177,11 +177,12 @@ const Chat: React.FC = () => {
     }
   };
 
-  // ---------------------- ElevenLabs TTS Integration ----------------------
+  const messageQueueRef = useRef<string[]>([]); // Queue to store pending messages
+  const isSpeakingRef = useRef<boolean>(false); // Track if audio is currently playing
+
   const speakWithElevenLabs = async (text: string) => {
     if (!text) return;
 
-    // Retrieve the voice ID from local storage, or use the default from your Vite env variables.
     const storedVoiceId = localStorage.getItem("elevenlabsVoiceId");
     const voiceId =
       storedVoiceId ||
@@ -206,7 +207,7 @@ const Chat: React.FC = () => {
           body: JSON.stringify({
             text,
             voice_settings: {
-              stability: 0.5, // adjust these settings as needed
+              stability: 0.5,
               similarity_boost: 0.5,
             },
           }),
@@ -223,23 +224,38 @@ const Chat: React.FC = () => {
       const audioBlob = await response.blob();
       const audioUrl = URL.createObjectURL(audioBlob);
       const audio = new Audio(audioUrl);
-      audio.play();
+
+      isSpeakingRef.current = true;
+
+      await new Promise((resolve) => {
+        audio.onended = () => {
+          isSpeakingRef.current = false;
+          resolve(true);
+        };
+        audio.play();
+      });
     } catch (error) {
       console.error("Error with ElevenLabs TTS:", error);
+      isSpeakingRef.current = false;
     }
   };
 
-  // Prevent repeated speech by tracking the last spoken message.
-  const lastSpokenMessageRef = useRef<string | null>(null);
+  const processMessageQueue = async () => {
+    if (isSpeakingRef.current || messageQueueRef.current.length === 0) return;
 
-  // When a new assistant message is added, read it out using ElevenLabs.
+    const nextMessage = messageQueueRef.current.shift(); // Get the next message
+    if (nextMessage) {
+      await speakWithElevenLabs(nextMessage);
+      processMessageQueue(); // Recursively process the next message
+    }
+  };
+
+  // When a new assistant message is added, queue it for speech.
   useEffect(() => {
     const lastMessage = messages[messages.length - 1];
     if (lastMessage && lastMessage.role === "assistant") {
-      if (lastSpokenMessageRef.current !== lastMessage.content) {
-        lastSpokenMessageRef.current = lastMessage.content;
-        speakWithElevenLabs(lastMessage.content);
-      }
+      messageQueueRef.current.push(lastMessage.content);
+      processMessageQueue(); // Start processing if not already speaking
     }
   }, [messages]);
 
