@@ -299,7 +299,7 @@ const Chat: React.FC = () => {
       ...prev,
       {
         role: "assistant",
-        content: "Executing transactions...",
+        content: `Executing transactions${dots}`,
       },
     ]);
 
