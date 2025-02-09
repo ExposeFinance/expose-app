@@ -45,16 +45,24 @@ export default function Settings() {
               User Profile
             </CardTitle>
           </CardHeader>
-          <CardContent className="flex flex-col items-center space-y-4">
+          <CardContent className="flex flex-col items-center space-y-3">
             <Avatar className="w-24 h-24">
               <AvatarImage src={userImage} alt="User Profile" />
               <AvatarFallback>{userName.charAt(0)}</AvatarFallback>
             </Avatar>
+            <p className="text-sm text-left text-text-secondary w-full font-semibold">
+              Your name
+            </p>
+
             <Input
               value={userName}
               onChange={(e) => setUserName(e.target.value)}
               placeholder="Enter your name"
             />
+            <p className="text-sm text-left text-text-secondary w-full font-semibold">
+              Profile image
+            </p>
+
             <Input
               value={userImage}
               onChange={(e) => setUserImage(e.target.value)}
@@ -74,23 +82,33 @@ export default function Settings() {
               Agent Settings
             </CardTitle>
           </CardHeader>
-          <CardContent className="flex flex-col items-center space-y-4">
+          <CardContent className="flex flex-col items-center space-y-3">
             <Avatar className="w-24 h-24">
               <AvatarImage src={agentImage} alt="Agent Profile" />
               <AvatarFallback className="text-xl font-extrabold bg-surface-secondary rounded-full">
                 {agentName.charAt(0)}
               </AvatarFallback>
             </Avatar>
+            <p className="text-sm text-left text-text-secondary w-full font-semibold">
+              Agent name
+            </p>
             <Input
               value={agentName}
               onChange={(e) => setAgentName(e.target.value)}
               placeholder="Agent Name"
             />
+            <p className="text-sm text-left text-text-secondary w-full font-semibold">
+              Agent image
+            </p>
             <Input
               value={agentImage}
               onChange={(e) => setAgentImage(e.target.value)}
               placeholder="Agent Profile Image URL"
             />
+            <p className="text-sm text-left text-text-secondary w-full font-semibold">
+              Agent voice
+            </p>
+
             <Input
               value={agentVoiceId}
               onChange={(e) => setAgentVoiceId(e.target.value)}
