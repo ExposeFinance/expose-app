@@ -6,12 +6,12 @@ import { useNebula } from "@/hooks/useNebula";
 import { Button } from "@/components/ui/button.js";
 import { useAnimatedDots } from "@/hooks/useAnimatedDots";
 import { PreparedTransaction, sendTransaction } from "thirdweb";
-import { account, openai } from "@/lib/utils";
+import { openai } from "@/lib/utils";
 import { Nebula } from "thirdweb/ai";
 import { client } from "@/thirdweb/thirdwebClient.js";
 import { AnimatedShinyText } from "@/components/ui/shimmer-text";
 import { TextareaWithButton } from "@/components/InputPrompt";
-// import { useActiveAccount } from "thirdweb/react";
+import { useActiveAccount } from "thirdweb/react";
 
 type ChatMessage = {
   role: "user" | "assistant";
@@ -39,6 +39,7 @@ const Chat: React.FC = () => {
 
   const dots = useAnimatedDots(loading);
   const { sessionId } = useNebula(); // from your context or environment
+  const account = useActiveAccount();
 
   // ---------------------- Voice Recording Refs ----------------------
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -285,9 +286,9 @@ const Chat: React.FC = () => {
     const lastMessage = messages[messages.length - 1];
     if (lastMessage && lastMessage.role === "assistant") {
       const sentences = lastMessage.content.split(/(?<=[.!?])\s+/); // Split into sentences
-      const firstTwoSentences = sentences.slice(0, 2).join(" "); // Take the first two
-      if (firstTwoSentences.trim()) {
-        messageQueueRef.current.push(firstTwoSentences);
+      const firstSentence = sentences.slice(0, 1).join(" "); // Take the first two
+      if (firstSentence.trim()) {
+        messageQueueRef.current.push(firstSentence);
         processMessageQueue(); // Start processing queue immediately
       }
     }
@@ -306,17 +307,19 @@ const Chat: React.FC = () => {
 
     try {
       for (const tx of pendingTransactions) {
-        const txReceipt = await sendTransaction({
-          transaction: tx,
-          account,
-        });
-        setMessages((prev) => [
-          ...prev,
-          {
-            role: "assistant",
-            content: `✅ Transaction executed successfully! Tx Hash: ${txReceipt?.transactionHash}`,
-          },
-        ]);
+        if (account) {
+          const txReceipt = await sendTransaction({
+            transaction: tx,
+            account: account,
+          });
+          setMessages((prev) => [
+            ...prev,
+            {
+              role: "assistant",
+              content: `✅ Transaction executed successfully! Tx Hash: ${txReceipt?.transactionHash}`,
+            },
+          ]);
+        }
       }
     } catch (err) {
       console.error("Error executing transaction:", err);
