@@ -1,6 +1,6 @@
 # Expose App
 
-<img width="100%" alt="Screenshot 2025-02-04 at 12 30 34 pm" src="https://github.com/user-attachments/assets/feecb9f2-c0e5-4cc3-9efa-992d62a5e21b" />
+<img width="100%" alt="Screenshot 2025-02-09 at 6 16 55 pm" src="https://github.com/user-attachments/assets/9f40bad3-a8e9-4305-a336-a4835e173e35" />
 
 Welcome to the **Expose App**!
 
@@ -21,7 +21,9 @@ The app is built with the following technologies:
 - **Tailwind CSS** – Utility-first CSS framework for modern styling.
 - **Shadcn UI** – Pre-configured, customizable components for React.
 - **Lucide Icons** – Beautiful open-source icons.
-- **Thirdweb** – SDK for building onchain apps.
+- **Thirdweb** – SDK For Nebula and Wallets.
+- **ElevenLabs** - Text to voice functionality.
+- **OpenAI Whisper** -- Voice to text functionality.
 
 ---
 
@@ -40,11 +42,10 @@ The app is built with the following technologies:
 - [x] Add first load tour https://www.cult-ui.com/docs/components/intro-disclosure
 - [x] Text to voice, so it reads out responses
 - [x] User can create wallet by sign up via google
-
-- [ ] When I move to wallet page, it deletes the chat context - Make global chat context.
-- [ ] Customise agent voice, picture & name - Store via localstorage
+- [x] Bug: When user moves wallet page, it deletes the chat context - Make global chat context.
+- [x] Customise agent voice, picture & name - Store via localstorage
+- [x] Customise user profile
 - [ ] Customise add a pre-prompt config to customise that agents context (e.g preferred contracts, networks, addresses)
-- [ ] ChatGPT like interface with voice mode and large input prompt
 - [ ] Create basic express backend to store user data
 - [ ] Notify you intelligently, i.e new coin you might like
 - [ ] Notify you for changes in your balances (without having to specify what tokens you own)
