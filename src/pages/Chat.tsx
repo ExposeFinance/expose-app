@@ -178,14 +178,13 @@ const Chat: React.FC = () => {
   };
 
   // ---------------------- ElevenLabs ----------------------
-  const messageQueueRef = useRef<string[]>([]); // Queue to store pending messages
-  const isSpeakingRef = useRef<boolean>(false); // Track if audio is currently playing
-  const isFetchingRef = useRef<boolean>(false); // Track if we're waiting for ElevenLabs API
-  const isProcessingQueueRef = useRef<boolean>(false); // Prevent multiple queue handlers from running
+  const messageQueueRef = useRef<string[]>([]); // Stores message texts to be fetched
+  const audioQueueRef = useRef<string[]>([]); // Stores pre-fetched audio URLs
+  const isSpeakingRef = useRef<boolean>(false); // Tracks if audio is currently playing
+  const isFetchingRef = useRef<boolean>(false); // Tracks if an audio fetch is ongoing
+  const isProcessingQueueRef = useRef<boolean>(false); // Prevents duplicate queue processing
 
-  const speakWithElevenLabs = async (text: string) => {
-    if (!text) return;
-
+  const fetchAudioForMessage = async (text: string) => {
     const storedVoiceId = localStorage.getItem("elevenlabsVoiceId");
     const voiceId =
       storedVoiceId ||
@@ -195,7 +194,7 @@ const Chat: React.FC = () => {
 
     if (!voiceId || !apiKey) {
       console.error("ElevenLabs voiceId or API key is not set");
-      return;
+      return null;
     }
 
     try {
@@ -222,29 +221,17 @@ const Chat: React.FC = () => {
       if (!response.ok) {
         const errorText = await response.text();
         console.error("Error from ElevenLabs:", errorText);
-        isFetchingRef.current = false;
-        return;
+        return null;
       }
 
       const audioBlob = await response.blob();
       isFetchingRef.current = false; // API request is done
 
-      const audioUrl = URL.createObjectURL(audioBlob);
-      const audio = new Audio(audioUrl);
-
-      isSpeakingRef.current = true; // Mark as speaking
-
-      await new Promise((resolve) => {
-        audio.onended = () => {
-          isSpeakingRef.current = false;
-          resolve(true);
-        };
-        audio.play();
-      });
+      return URL.createObjectURL(audioBlob); // Return the pre-fetched audio URL
     } catch (error) {
       console.error("Error with ElevenLabs TTS:", error);
       isFetchingRef.current = false;
-      isSpeakingRef.current = false;
+      return null;
     }
   };
 
@@ -252,22 +239,55 @@ const Chat: React.FC = () => {
     if (isProcessingQueueRef.current) return; // Prevent multiple queue handlers from running
     isProcessingQueueRef.current = true;
 
-    while (messageQueueRef.current.length > 0) {
-      const nextMessage = messageQueueRef.current.shift();
-      if (nextMessage) {
-        await speakWithElevenLabs(nextMessage); // Wait for API response & playback
+    while (
+      messageQueueRef.current.length > 0 ||
+      audioQueueRef.current.length > 0
+    ) {
+      // Ensure that audio is fetched while previous one is playing
+      if (messageQueueRef.current.length > 0 && !isFetchingRef.current) {
+        const nextMessage = messageQueueRef.current.shift();
+        if (nextMessage) {
+          fetchAudioForMessage(nextMessage).then((audioUrl) => {
+            if (audioUrl) {
+              audioQueueRef.current.push(audioUrl);
+            }
+          });
+        }
       }
+
+      // Play next available audio if nothing is playing
+      if (!isSpeakingRef.current && audioQueueRef.current.length > 0) {
+        const audioUrl = audioQueueRef.current.shift();
+        if (audioUrl) {
+          const audio = new Audio(audioUrl);
+          isSpeakingRef.current = true;
+
+          await new Promise((resolve) => {
+            audio.onended = () => {
+              isSpeakingRef.current = false;
+              resolve(true);
+            };
+            audio.play();
+          });
+        }
+      }
+
+      await new Promise((r) => setTimeout(r, 100)); // Prevent CPU-intensive loop
     }
 
     isProcessingQueueRef.current = false; // Queue processing is done
   };
 
-  // When a new assistant message is added, queue it for speech.
+  // When a new assistant message is added, prefetch audio while playing existing messages.
   useEffect(() => {
     const lastMessage = messages[messages.length - 1];
     if (lastMessage && lastMessage.role === "assistant") {
-      messageQueueRef.current.push(lastMessage.content);
-      processMessageQueue(); // Start processing queue if idle
+      const sentences = lastMessage.content.split(/(?<=[.!?])\s+/); // Split into sentences
+      const firstTwoSentences = sentences.slice(0, 2).join(" "); // Take the first two
+      if (firstTwoSentences.trim()) {
+        messageQueueRef.current.push(firstTwoSentences);
+        processMessageQueue(); // Start processing queue if idle
+      }
     }
   }, [messages]);
 
