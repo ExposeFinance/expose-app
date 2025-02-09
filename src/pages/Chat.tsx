@@ -148,6 +148,8 @@ const Chat: React.FC = () => {
           const transcription = await openai.audio.transcriptions.create({
             file: audioFile,
             model: "whisper-1",
+            prompt:
+              "ETH, WETH, USDC, PAXOS, GOLD, Swap, SimpleSwap vitalik.eth, Sepolia, Polygon, Ethereum",
           });
           // Send the transcribed text
           await handleSend(transcription?.text);
@@ -173,6 +175,72 @@ const Chat: React.FC = () => {
       streamRef.current = null;
     }
   };
+
+  // ---------------------- ElevenLabs TTS Integration ----------------------
+  const speakWithElevenLabs = async (text: string) => {
+    if (!text) return;
+
+    // Retrieve the voice ID from local storage, or use the default from your Vite env variables.
+    const storedVoiceId = localStorage.getItem("elevenlabsVoiceId");
+    const voiceId =
+      storedVoiceId ||
+      import.meta.env.VITE_ELEVENLABS_VOICE_ID ||
+      "EXAVITQu4vr4xnSDxMaL";
+    const apiKey = import.meta.env.VITE_ELEVENLABS_API_KEY;
+
+    if (!voiceId || !apiKey) {
+      console.error("ElevenLabs voiceId or API key is not set");
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`,
+        {
+          method: "POST",
+          headers: {
+            "xi-api-key": apiKey,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            text,
+            voice_settings: {
+              stability: 0.5, // adjust these settings as needed
+              similarity_boost: 0.5,
+            },
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Error from ElevenLabs:", errorText);
+        return;
+      }
+
+      // Get the audio blob from the response and play it.
+      const audioBlob = await response.blob();
+      const audioUrl = URL.createObjectURL(audioBlob);
+      const audio = new Audio(audioUrl);
+      audio.play();
+    } catch (error) {
+      console.error("Error with ElevenLabs TTS:", error);
+    }
+  };
+
+  // Prevent repeated speech by tracking the last spoken message.
+  const lastSpokenMessageRef = useRef<string | null>(null);
+
+  // When a new assistant message is added, read it out using ElevenLabs.
+  useEffect(() => {
+    const lastMessage = messages[messages.length - 1];
+    if (lastMessage && lastMessage.role === "assistant") {
+      if (lastSpokenMessageRef.current !== lastMessage.content) {
+        lastSpokenMessageRef.current = lastMessage.content;
+        speakWithElevenLabs(lastMessage.content);
+      }
+    }
+  }, [messages]);
 
   // ---------------------- Transaction Confirm/Decline ----------------------
   const handleConfirmTransactions = async () => {
