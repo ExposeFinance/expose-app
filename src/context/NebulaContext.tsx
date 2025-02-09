@@ -1,15 +1,15 @@
 import React, { createContext, useEffect, useState } from "react";
 import nebulaCreateSession from "../thirdweb/nebulaCreateSession";
 
-export type ThirdwebContextType = {
+export type NebulaContextType = {
   sessionId: string;
 };
 
-export const ThirdwebContext = createContext<ThirdwebContextType | undefined>(
+export const NebulaContext = createContext<NebulaContextType | undefined>(
   undefined
 );
 
-export const ThirdwebProvider: React.FC<{ children: React.ReactNode }> = ({
+export const NebulaProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [sessionId, setSessionId] = useState<string>("");
@@ -32,8 +32,8 @@ export const ThirdwebProvider: React.FC<{ children: React.ReactNode }> = ({
   }, []);
 
   return (
-    <ThirdwebContext.Provider value={{ sessionId }}>
+    <NebulaContext.Provider value={{ sessionId }}>
       {children}
-    </ThirdwebContext.Provider>
+    </NebulaContext.Provider>
   );
 };

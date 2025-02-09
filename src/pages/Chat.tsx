@@ -2,7 +2,7 @@ import React, { useState, useRef, useCallback, useEffect } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { sepolia } from "thirdweb/chains";
-import { useThirdweb } from "@/hooks/useThirdweb";
+import { useNebula } from "@/hooks/useNebula";
 import { Button } from "@/components/ui/button.js";
 import { useAnimatedDots } from "@/hooks/useAnimatedDots";
 import { PreparedTransaction, sendTransaction } from "thirdweb";
@@ -11,6 +11,7 @@ import { Nebula } from "thirdweb/ai";
 import { client } from "@/thirdweb/thirdwebClient.js";
 import { AnimatedShinyText } from "@/components/ui/shimmer-text";
 import { TextareaWithButton } from "@/components/InputPrompt";
+import { useActiveAccount } from "thirdweb/react";
 
 type ChatMessage = {
   role: "user" | "assistant";
@@ -37,7 +38,7 @@ const Chat: React.FC = () => {
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   const dots = useAnimatedDots(loading);
-  const { sessionId } = useThirdweb(); // from your context or environment
+  const { sessionId } = useNebula(); // from your context or environment
 
   // ---------------------- Voice Recording Refs ----------------------
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);

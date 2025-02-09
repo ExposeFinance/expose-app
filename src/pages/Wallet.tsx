@@ -3,17 +3,33 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 // import { Skeleton } from "@/components/ui/skeleton";
 import { CircleDollarSign, ShieldCheck } from "lucide-react";
 import { PageLayout } from "@/components/layout/PageLayout";
+import { sepolia } from "thirdweb/chains";
+import { client } from "@/thirdweb/thirdwebClient";
+import {
+  ConnectButton,
+  useActiveAccount,
+  useWalletBalance,
+} from "thirdweb/react";
 
 export default function Home() {
+  const activeAccount = useActiveAccount();
+  const walletAddress = activeAccount?.address;
+  const { data, isLoading, isError } = useWalletBalance({
+    chain: sepolia,
+    address: walletAddress,
+    client,
+  });
+
   const walletData = [
     {
       id: 1,
       name: "ETH",
-      amount: `69 ETH`,
+      amount: `${data?.displayValue}`,
       icon: <CircleDollarSign className="text-yellow-1000" />,
     },
   ];
 
+  console.log(data);
   return (
     <PageLayout title="Wallet">
       <div className="flex flex-col h-full space-y-4">
@@ -55,6 +71,7 @@ export default function Home() {
             <h2 className="text-xl font-semibold text-[theme(colors.text.primary)]">
               {"Vitalik"}
             </h2>
+            <ConnectButton client={client}></ConnectButton>
           </>
         </div>
 

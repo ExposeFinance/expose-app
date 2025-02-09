@@ -4,9 +4,10 @@ import AppLayout from "@/components/layout/AppLayout";
 import { AlertProvider } from "@/context/AlertContext";
 import Wallet from "@/pages/Wallet";
 import Chat from "./pages/Chat";
-import { ThirdwebProvider } from "./context/ThirdwebContext";
 import { IntroDisclosure } from "@/components/ui/intro-disclosure";
 import { useEffect, useState } from "react";
+import ThirdwebProvider from "./components/providers/ThirdwebProvider";
+import { NebulaProvider } from "./context/NebulaContext";
 
 const steps = [
   {
@@ -130,18 +131,20 @@ function App() {
       />
 
       <ThirdwebProvider>
-        <AlertProvider>
-          <Router>
-            <AppLayout>
-              <Routes>
-                <Route path="/wallet" element={<Wallet />} />
-                <Route path="/chat" element={<Chat />} />
+        <NebulaProvider>
+          <AlertProvider>
+            <Router>
+              <AppLayout>
+                <Routes>
+                  <Route path="/wallet" element={<Wallet />} />
+                  <Route path="/chat" element={<Chat />} />
 
-                <Route path="*" element={<Chat />} />
-              </Routes>
-            </AppLayout>
-          </Router>
-        </AlertProvider>
+                  <Route path="*" element={<Chat />} />
+                </Routes>
+              </AppLayout>
+            </Router>
+          </AlertProvider>
+        </NebulaProvider>
       </ThirdwebProvider>
     </>
   );
