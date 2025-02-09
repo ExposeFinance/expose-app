@@ -11,7 +11,7 @@ import { Nebula } from "thirdweb/ai";
 import { client } from "@/thirdweb/thirdwebClient.js";
 import { AnimatedShinyText } from "@/components/ui/shimmer-text";
 import { TextareaWithButton } from "@/components/InputPrompt";
-import { useActiveAccount } from "thirdweb/react";
+// import { useActiveAccount } from "thirdweb/react";
 
 type ChatMessage = {
   role: "user" | "assistant";
@@ -177,8 +177,11 @@ const Chat: React.FC = () => {
     }
   };
 
+  // ---------------------- ElevenLabs ----------------------
   const messageQueueRef = useRef<string[]>([]); // Queue to store pending messages
   const isSpeakingRef = useRef<boolean>(false); // Track if audio is currently playing
+  const isFetchingRef = useRef<boolean>(false); // Track if we're waiting for ElevenLabs API
+  const isProcessingQueueRef = useRef<boolean>(false); // Prevent multiple queue handlers from running
 
   const speakWithElevenLabs = async (text: string) => {
     if (!text) return;
@@ -196,6 +199,8 @@ const Chat: React.FC = () => {
     }
 
     try {
+      isFetchingRef.current = true; // Mark API call as in progress
+
       const response = await fetch(
         `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`,
         {
@@ -217,15 +222,17 @@ const Chat: React.FC = () => {
       if (!response.ok) {
         const errorText = await response.text();
         console.error("Error from ElevenLabs:", errorText);
+        isFetchingRef.current = false;
         return;
       }
 
-      // Get the audio blob from the response and play it.
       const audioBlob = await response.blob();
+      isFetchingRef.current = false; // API request is done
+
       const audioUrl = URL.createObjectURL(audioBlob);
       const audio = new Audio(audioUrl);
 
-      isSpeakingRef.current = true;
+      isSpeakingRef.current = true; // Mark as speaking
 
       await new Promise((resolve) => {
         audio.onended = () => {
@@ -236,18 +243,23 @@ const Chat: React.FC = () => {
       });
     } catch (error) {
       console.error("Error with ElevenLabs TTS:", error);
+      isFetchingRef.current = false;
       isSpeakingRef.current = false;
     }
   };
 
   const processMessageQueue = async () => {
-    if (isSpeakingRef.current || messageQueueRef.current.length === 0) return;
+    if (isProcessingQueueRef.current) return; // Prevent multiple queue handlers from running
+    isProcessingQueueRef.current = true;
 
-    const nextMessage = messageQueueRef.current.shift(); // Get the next message
-    if (nextMessage) {
-      await speakWithElevenLabs(nextMessage);
-      processMessageQueue(); // Recursively process the next message
+    while (messageQueueRef.current.length > 0) {
+      const nextMessage = messageQueueRef.current.shift();
+      if (nextMessage) {
+        await speakWithElevenLabs(nextMessage); // Wait for API response & playback
+      }
     }
+
+    isProcessingQueueRef.current = false; // Queue processing is done
   };
 
   // When a new assistant message is added, queue it for speech.
@@ -255,7 +267,7 @@ const Chat: React.FC = () => {
     const lastMessage = messages[messages.length - 1];
     if (lastMessage && lastMessage.role === "assistant") {
       messageQueueRef.current.push(lastMessage.content);
-      processMessageQueue(); // Start processing if not already speaking
+      processMessageQueue(); // Start processing queue if idle
     }
   }, [messages]);
 

@@ -15,10 +15,10 @@ const steps = [
     short_description:
       "Swap, send, borrow and lend crypto with just your voice.",
     full_description:
-      "Welcome to Cult UI! Let's explore how our beautifully crafted components can help you build stunning user interfaces with ease.",
+      "Welcome to Expose! We are a voice-first crypto wallet that allows you to interact with your crypto assets using just your voice. With Expose, you can swap, send, borrow, lend, and more, all with just your voice. We are excited to have you on board!",
     media: {
       type: "image" as const,
-      src: "/expose-splash.png",
+      src: "/expose-gm.png",
       alt: "Feature Image",
     },
   },
@@ -27,10 +27,10 @@ const steps = [
     short_description:
       "Enjoy a simple chat interface to access crypto with your agent",
     full_description:
-      "Every component is built with customization in mind. Use our powerful theming system with Tailwind CSS to match your brand perfectly.",
+      "Welcome to Expose! We are a voice-first crypto wallet that allows you to interact with your crypto assets using just your voice. With Expose, you can swap, send, borrow, lend, and more, all with just your voice. We are excited to have you on board!",
     media: {
       type: "image" as const,
-      src: "/expose-splash.png",
+      src: "/expose-chat.png",
       alt: "Feature Image",
     },
   },
@@ -39,10 +39,10 @@ const steps = [
     short_description:
       "Simply hold the Chat button to talk! Push-to-talk crypto interactions are here.",
     full_description:
-      "Every component is built with customization in mind. Use our powerful theming system with Tailwind CSS to match your brand perfectly.",
+      "Welcome to Expose! We are a voice-first crypto wallet that allows you to interact with your crypto assets using just your voice. With Expose, you can swap, send, borrow, lend, and more, all with just your voice. We are excited to have you on board!",
     media: {
       type: "image" as const,
-      src: "/expose-splash.png",
+      src: "/expose-voice.png",
       alt: "Feature Image",
     },
   },
@@ -51,10 +51,10 @@ const steps = [
     short_description:
       "Ask your agent to learn more about crypto, such as what are NFTs, how to build a smart contract, and more!",
     full_description:
-      "Every component is built with customization in mind. Use our powerful theming system with Tailwind CSS to match your brand perfectly.",
+      "Welcome to Expose! We are a voice-first crypto wallet that allows you to interact with your crypto assets using just your voice. With Expose, you can swap, send, borrow, lend, and more, all with just your voice. We are excited to have you on board!",
     media: {
       type: "image" as const,
-      src: "/expose-splash.png",
+      src: "/expose-learn.png",
       alt: "Feature Image",
     },
   },
@@ -63,10 +63,10 @@ const steps = [
     short_description:
       "Query your agent for the latest crypto prices, smart contracts, blockchain stats, and more!",
     full_description:
-      "Every component is built with customization in mind. Use our powerful theming system with Tailwind CSS to match your brand perfectly.",
+      "Welcome to Expose! We are a voice-first crypto wallet that allows you to interact with your crypto assets using just your voice. With Expose, you can swap, send, borrow, lend, and more, all with just your voice. We are excited to have you on board!",
     media: {
       type: "image" as const,
-      src: "/expose-splash.png",
+      src: "/expose-query.png",
       alt: "Feature Image",
     },
   },
@@ -75,10 +75,10 @@ const steps = [
     short_description:
       "Swap, send, lend and borrow.. and more! Make transactions onchain effortlessly.",
     full_description:
-      "Every component is built with customization in mind. Use our powerful theming system with Tailwind CSS to match your brand perfectly.",
+      "Welcome to Expose! We are a voice-first crypto wallet that allows you to interact with your crypto assets using just your voice. With Expose, you can swap, send, borrow, lend, and more, all with just your voice. We are excited to have you on board!",
     media: {
       type: "image" as const,
-      src: "/expose-splash.png",
+      src: "/expose-transact.png",
       alt: "Feature Image",
     },
   },
@@ -87,23 +87,23 @@ const steps = [
     short_description:
       "Built in signless, gasless wallet, supporting up to 2500+ EVM chains, and crosschain transactions",
     full_description:
-      "All components are fully responsive and follow WAI-ARIA guidelines, ensuring your application works seamlessly across all devices and is accessible to everyone.",
+      "Welcome to Expose! We are a voice-first crypto wallet that allows you to interact with your crypto assets using just your voice. With Expose, you can swap, send, borrow, lend, and more, all with just your voice. We are excited to have you on board!",
     media: {
       type: "image" as const,
 
-      src: "/expose-splash.png",
+      src: "/expose-wallet.png",
       alt: "Feature Image",
     },
   },
   {
-    title: "Customize",
+    title: "Personalize",
     short_description: "Customize your agent's appearance and voice",
     full_description:
-      "You're ready to start building! Check out our comprehensive documentation and component examples to create your next amazing project.",
+      "Welcome to Expose! We are a voice-first crypto wallet that allows you to interact with your crypto assets using just your voice. With Expose, you can swap, send, borrow, lend, and more, all with just your voice. We are excited to have you on board!",
     media: {
       type: "image" as const,
 
-      src: "/expose-splash.png",
+      src: "/expose-personalize.png",
       alt: "Feature Image",
     },
   },
